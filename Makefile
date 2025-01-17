@@ -17,7 +17,7 @@ LIB_DIR = lib/$(ARCH)
 BIN_DIR = bin/$(ARCH)
 
 # add your list of binaries here
-BINARIES=hello_world
+BINARIES=strlen
 
 .PHONY: all clean
 
@@ -39,7 +39,7 @@ $(BUILD_DIR)/%.o : %.s | $(BUILD_DIR)
 # linking ######################################################################
 
 # TODO: complete
-$(BIN_DIR)/hello_world: $(BUILD_DIR)/hello_world.o | $(BIN_DIR)
+$(BIN_DIR)/strlen: $(BUILD_DIR)/strlen.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
 
 # symlinks for executables #####################################################
