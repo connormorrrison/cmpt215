@@ -7,7 +7,20 @@
 # Read-only data section
 	.section .rodata
 prompt_n:       .asciz "Enter the number of integers: \n"
-prompt_val:     .asciz "Enter an integer: \n"
+prompt_value:     .asciz "Enter an integer: \n"
 output_message: .asciz "Count of numbers with absolute value 42: \n"
 
+# Code section
+	.section .text
+	.globl _start
 
+_start:
+	# Print prompt for N
+	la a0, prompt_n
+	li a7, SYS_printStr
+	ecall
+
+	# Exit the program
+	li a0, 0
+	li a7, SYS_exit
+	ecall
