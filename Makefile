@@ -17,7 +17,7 @@ LIB_DIR = lib/$(ARCH)
 BIN_DIR = bin/$(ARCH)
 
 # add your list of binaries here
-BINARIES=q5 q6
+BINARIES=q5 q6 q7
 
 .PHONY: all clean
 
@@ -44,6 +44,9 @@ $(BIN_DIR)/q5: $(BUILD_DIR)/q5.o | $(BIN_DIR)
 
 $(BIN_DIR)/q6: $(BUILD_DIR)/q6.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
+
+$(BIN_DIR)/q7: $(BUILD_DIR)/q7.o | $(BIN_DIR)
+        $(LD) $(LDFLAGS) $< -o $@
 
 # symlinks for executables #####################################################
 
