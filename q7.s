@@ -11,7 +11,8 @@ newline:        .asciz "\n"
 
 # Uninitialized data section
 	.section .bss
-str: .space 128	# Buffer for up to 127 chars + null
+unencoded_str: .space 128	# Space for unencoded string (127 chars + null)
+encoded_str:   .space 128	# Space for encoded string (127 chars + null)
 
 # Code section
 	.section .text
@@ -24,23 +25,32 @@ _start:
 	ecall
 
 	# Read characters + null
-	la a0, str
+	la a0, unencoded_str
 	li a1, 128	# Max number of bytes (including null terminator)
 	li a7, SYS_readStr
 	ecall
 
-	la s0, str	# Load address of input string into s0
+	la s0, unencoded_str	# Load address of input string into s0
+	la s1, encoded_str	# Load address of output string into s1
 
 encoding_loop:
-	# Load first character
-	la t0, 0(s0)
+	# ASCII uppercase letters range: 65-90
+	# ASCII lowercase letters range: 97-122
+	la t0, 0(s0)	# Load the first character
 
-	beqz t0, display_result	# If '\0' reached, we stop
+	beqz t0, display_result	# If '\0' reached, stop
 	
 	# Check if character is lowercase
 	li t1, 'a'
 	li t2, 'z'
+	blt t0, t1, check_uppercase	# If first character less than , check uppercase
+
+	j encoding_loop
 	
+check_uppercase:
+	li t1, 'A'
+	li t2, 'Z'
+		
 
 display_result:
 	# Print encoding message
