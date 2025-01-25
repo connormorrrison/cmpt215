@@ -37,20 +37,39 @@ encoding_loop:
 	# ASCII uppercase letters range: 65-90
 	# ASCII lowercase letters range: 97-122
 	la t0, 0(s0)	# Load the first character
-
 	beqz t0, display_result	# If '\0' reached, stop
 	
 	# Check if character is lowercase
 	li t1, 'a'
 	li t2, 'z'
-	blt t0, t1, check_uppercase	# If first character less than , check uppercase
+	blt t0, t1, check_uppercase	# If first character less than 97-122, branch to check_uppercase
+	bgt t0, t2, encoding_skip	# If char > z, it's a non-alphabetic char, so skip
 
-	j encoding_loop
+	# If we get to this point, char is lowercase, so handle it
+	addi t0, t0, 15	# 15 position shift right
+	bgt t0, t2, wrap_lowercase
+
+	j store_char
 	
+wrap_lowercase:
+		
+
 check_uppercase:
+	# Check uppercase
 	li t1, 'A'
 	li t2, 'Z'
-		
+	blt t0, t1, encoding_skip	# If char < A (65), it is a non-alphabetic char, so skip
+	bgt t0, t2, encoding_skip	# If char > Z (90), it is also non-alphabetic, so skip
+	
+	# If we get to this point, char is uppercase, so handle it
+	addi t0, t0, 15	# 15 position shift right
+	bgt t0, t2, wrap_uppercase
+
+wrap_uppercase:
+	
+
+store_char:
+
 
 display_result:
 	# Print encoding message
