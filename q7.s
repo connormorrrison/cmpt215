@@ -36,7 +36,7 @@ _start:
 encoding_loop:
 	# ASCII uppercase letters range: 65-90
 	# ASCII lowercase letters range: 97-122
-	la t0, 0(s0)	# Load the first character
+	lb t0, 0(s0)	# Load the first character
 	beqz t0, display_result	# If '\0' reached, stop
 	
 	# Check if character is lowercase
@@ -52,7 +52,10 @@ encoding_loop:
 	j store_char
 	
 wrap_lowercase:
-		
+	sub t0, t0, t2	# Calculate how far past 'z' we are
+	add t0, t0, t1
+	
+	j store_char
 
 check_uppercase:
 	# Check uppercase
@@ -66,10 +69,21 @@ check_uppercase:
 	bgt t0, t2, wrap_uppercase
 
 wrap_uppercase:
+	sub t0, t0, t2
+	add t0, t0, t1
 	
+	j store_char
+
+encoding_skip:
+	# For non-alphanumeric characters without modification
+	j store_char
 
 store_char:
-
+	sb t0, 0(s1)	# Store char from t0 to s1, at offset 0
+	addi s0, s0, 1
+	addi s1, s1, 1
+	
+	j encoding_loop
 
 display_result:
 	# Print encoding message
