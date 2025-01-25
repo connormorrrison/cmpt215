@@ -1,0 +1,152 @@
+commit d89266d7426901adf47ac6e00e38697a9a655180
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 21:16:25 2025 -0600
+
+    Enforced 20 character limit
+
+commit 705132bcca53ee29188ae51cc3fe47c21757ebdd
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 19:52:57 2025 -0600
+
+    Updated wrap around logic to fix bug, now merely minuses 26
+
+commit d58484f9cd446e3654e3d44c529d391d076bc980
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 19:27:02 2025 -0600
+
+    Add intial wrap around logic for lower and uppercase chars; chars are now stored in encoded buffer
+
+commit 65811e277f3303a75a7370272fd90755b717b3c7
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 18:29:59 2025 -0600
+
+    Continued encoding loop(s) implementation
+    
+    - Initial implementation of encoding loop for lowercase chars
+    - Similar logic utilized for uppercase chars
+    - Simplified result printing
+
+commit 2de819037a92dd12627628ec093a91639c89192e
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 18:01:52 2025 -0600
+
+    Transfered written answers to project
+
+commit 4cccc0604ac6ab15846d21a98a2f7029d6049902
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 12:01:03 2025 -0600
+
+    Added comments for ASCII representation explanation and additional logic
+
+commit 115b84c6725e5676005e42a1865adee7fd019060
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 04:30:48 2025 -0600
+
+    Added intial encoding logic and updated Makefile error
+
+commit 2f51c976e41289802a64da6d9c9ce7aee62b6ed7
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 01:49:50 2025 -0600
+
+    Updated Makefile for q7.s; added environment calls, read-only data section, uninitialized data section, code section and exit to q7.s
+
+commit 606a9eac262df6730c934e06349d4450e0303e1b
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 01:11:20 2025 -0600
+
+    Add q7.s to project
+
+commit 66355b46ac4b1a5c6941e2da209723053cfaee44
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 24 01:07:48 2025 -0600
+
+    Continued implementation of q6.s
+    
+    - Adjusted search loop to resolve index errors
+            - Added s3 registar to track 1-based index position
+            - Compare each array element to m and branch to found if >= m
+    - Print found message with formatting added
+    - Tested with various inputs
+
+commit 9d4629fffc49137a6189afd2875c8486108272a5
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Jan 23 22:16:47 2025 -0600
+
+    Continued implementation of q6.s
+    
+    - Add additional messages in 'read-only section'
+    - Implemented search initialization section
+            - Prompt user for integer M
+            - Read integer M
+            - Reset array pointer / counter logic added
+
+commit 7e87e90a23e4aff98d25be64e4954a8dd71fc84f
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Jan 23 06:03:32 2025 -0600
+
+    Updated Makefile and began q6.s
+    
+    - Updated Makefile to build q6.s
+    - Added initial environment calls to q6.s
+    - Initialized array and initial prompt
+
+commit ceb4a671ee7c99b05f9212f26103d6e8f6e1af39
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Jan 23 01:28:01 2025 -0600
+
+    Updated loop logic, printing format, and error handling
+    
+    - Updated and simplifed loop logic to handle negation
+    - Updated printing format to add newline
+    - Add error handing to exit program if non-positive number entered at
+      beginning
+
+commit 669494948a53c9ab0791ff5cd5af7883e68a6c89
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Jan 22 23:54:39 2025 -0600
+
+    Continued implementation of q5.s
+    
+    - Intialize counter for counting instances of abs(42)
+    - Intialize loop counter for loop
+    - Intital loop with system prompt, and readInt
+    - loop_counter and abs_counter 'functions' created
+    - Exit command moved to 'done'
+
+commit 03c2c134d27b1517cbe4b8114b772e9944419afe
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Jan 22 00:24:10 2025 -0600
+
+    Tested printing prompt and added exit sys call
+    
+    - Modifed Makefile for q5.s
+    - Deleted hello_world.s and strlen.s from branch 'master'
+    - Updated q5.s to include exit sys call after printing prompt
+
+commit 04868624be78b6f6db10035004707d335d1b3245
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Tue Jan 21 23:30:36 2025 -0600
+
+    Add initial assembly setup
+    
+    - Define initial system call numbers for exit, integer input/output and
+      string output
+    - Set up read-only data section with user prompts and output message
+
+commit d6ba8db92e42c8895fddc1364b5900e6583619de
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 15:45:00 2025 -0600
+
+    Added run.sh file
+
+commit b3e73ac7ea3d3790a769dc6fe0be8e7c734cc81a
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 15:00:52 2025 -0600
+
+    Added working Makefile and hello_world.s
+
+commit 91e147d8961b310713a29c93d15f4273d7b74bc4
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 14:39:10 2025 -0600
+
+    initial commit
