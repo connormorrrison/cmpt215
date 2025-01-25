@@ -11,8 +11,8 @@ newline:        .asciz "\n"
 
 # Uninitialized data section
 	.section .bss
-unencoded_str: .space 128	# Space for unencoded string (127 chars + null)
-encoded_str:   .space 128	# Space for encoded string (127 chars + null)
+unencoded_str: .space 21	# Space for unencoded string (127 chars + null)
+encoded_str:   .space 21	# Space for encoded string (127 chars + null)
 
 # Code section
 	.section .text
@@ -26,7 +26,7 @@ _start:
 
 	# Read characters + null
 	la a0, unencoded_str
-	li a1, 128	# Max number of bytes (including null terminator)
+	li a1, 21	# Max number of bytes (including null terminator)
 	li a7, SYS_readStr
 	ecall
 
@@ -89,7 +89,7 @@ display_result:
 	# Print encoding message
 	la a0, result_message
 	li a7, SYS_printStr
-	ecall
+	ecall	
 
 	# Printing encoded string
 	la a0, encoded_str
