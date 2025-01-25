@@ -52,8 +52,7 @@ encoding_loop:
 	j store_char
 	
 wrap_lowercase:
-	sub t0, t0, t2	# Calculate how far past 'z' we are
-	add t0, t0, t1
+	addi t0, t0, -26
 	
 	j store_char
 
@@ -68,9 +67,10 @@ check_uppercase:
 	addi t0, t0, 15	# 15 position shift right
 	bgt t0, t2, wrap_uppercase
 
+	j store_char
+
 wrap_uppercase:
-	sub t0, t0, t2
-	add t0, t0, t1
+	addi t0, t0, -26
 	
 	j store_char
 
@@ -91,9 +91,8 @@ display_result:
 	li a7, SYS_printStr
 	ecall
 
-	# TODO add code for printing encoded string
-
-	la a0, newline
+	# Printing encoded string
+	la a0, encoded_str
 	li a7, SYS_printStr
 	ecall
 
