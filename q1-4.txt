@@ -1,0 +1,118 @@
+Q1.
+
+
+(a)
+Clock Rate = 2 GHz = 2 * 10^9 cycles/second
+
+Average CPI = (3 * 0.20) + (1 * 0.40) + (2 * 0.30) + (4 * 0.10)
+Average CPI = 0.60 + 0.40 + 0.60 + 0.40
+Average CPI = 2.0
+
+MIPS = Clock Rate / (Average CPI * 10^6)
+MIPS = 2 * 10^9 / (2.0 * 10^6)
+MIPS = 1000 MIPS
+
+
+(b)
+Total Instructions = 500 million = 500 * 10^6
+
+Execution Time = (Total Instructions * Average CPI) / Clock Rate
+Execution Time = (500 * 10^6 * 2.0) / 2 * 10^9
+Execution Time = 0.5 seconds
+
+
+(c)
+When replacing pairs of type C instructions (2 instructions, 4 cycles total) with 1 type A instruction (3 cycles):
+
+Total cycles per replaced pair decreases from 4 to 3 = execution time is reduced.
+But the instruction count also drops from 2 to 1 for each replacement pair.
+Since MIPS = (Instruction Count) / (Execution Time), the instruction count is reduced more than the cycle time is reduced, so the MIPS decreases.
+
+
+(d)
+
+New instruction distribution:
+
+Type A: 20% + (2/3 * 30%)/2 = 30% (original + half of replaced C pairs)
+Type B: 40% (unchanged)
+Type C: 30% * (1/3) = 10% (remaining third)
+Type D: 10% (unchanged)
+
+New Average CPI = (3 * 0.30) + (1 * 0.40) + (2 * 0.10) + (4 * 0.10)
+New Average CPI = 0.9 + 0.4 + 0.2 + 0.4 = 1.9
+Percentage Decrease in execution time = (2.0 - 1.9) / 2.0 * 100 = 5%
+
+
+
+Q2.
+
+
+(a)
+New multiply time = 20 / 4 = 5 s
+Memory + other stay 50 + 30 = 80 s
+New total time = 5 + 80 = 85 s
+
+Speedup = 100 / 85 ≈ 1.176 (17.6% faster overall)
+
+
+(b)
+New memory time = 50 / 2 = 25 s
+Multiply + other stay 20 + 30 = 50 s
+New total time = 25 + 50 = 75 s
+
+Speedup = 100 / 75 = 1.333… (33.3% faster overall)
+
+
+(c)
+New multiply time = 20 / 4 = 5 s
+New memory time = 50 / 2 = 25 s
+Other = 30 s
+New total = 5 + 25 + 30 = 60 s
+
+Speedup = 100 / 60 = 1.666… (66.7% faster overall)
+
+
+
+Q3.
+
+K = original clock period
+
+Original time = [4fA + 8(1 – fA)] × K
+= (4fA + 8 - 8fA) × K
+= (8 - 4fA) × K
+
+Modified time = [2fA + 8(1 – fA)] × 1.2K
+= (2fA + 8 - 8fA) × 1.2K
+= (8 - 6fA) × 1.2K
+
+For improvement: Modified time < Original time
+(8 - 6fA) × 1.2K < (8 - 4fA) × K
+8 - 6fA < (8 - 4fA) ÷ 1.2
+9.6 - 7.2fA < 8 - 4fA
+9.6 - 8 < 7.2fA - 4fA
+1.6 < 3.2fA
+fA > 0.5
+
+Therefore, the execution time decreases only if more than 50% of the instructions are type A.
+
+
+
+Q4.
+
+
+System A: 1s, 6s, 1.5s, 60s
+System B: 4s, 12s, 6s, 30s
+
+Compare time ratios B/A per benchmark and then take the geometric mean:
+
+Benchmark1 ratio = 4 / 1 = 4
+Benchmark2 ratio = 12 / 6 = 2
+Benchmark3 ratio = 6 / 1.5 = 4
+Benchmark4 ratio = 30 / 60 = 0.5
+
+Product = 4 * 2 * 4 * 0.5 = 16
+Geometric mean = (16)^(1/4) = 2
+
+That ratio > 1 means System B takes on average twice as long as System A.
+Hence, System A is faster (about 2x faster), and has the higher SPEC rating by a factor of 2.
+
