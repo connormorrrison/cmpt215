@@ -38,13 +38,25 @@ _start:
 
 	# Else array is <= 25, and read ints into array
 	la s0, array
-	li s1, 0	# Start counter at 0
+	li t1, 0	# Start counter at 0
 
 read_number_loop:
-	# Read in number into array
+	# Prompt for number
+	la a0, prompt_number
+	li a7, SYS_printStr
+	ecall
+
+	# Read in number
 	li a7, SYS_readInt
+	ecall
 	sw a0, 0(s0)
-	addi s0
+	addi s0, s0, 4
+	addi t1, t1, 1
+	
+	# Repeat read_number_loop
+	j read_number_loop
+
+
 
 exit:
 	li a0, 0
