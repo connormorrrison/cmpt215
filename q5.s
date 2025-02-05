@@ -25,3 +25,22 @@ _start:
 	la s0, array
 	li s1, 25
 
+loop:
+	li a7, SYS_readInt
+	ecall
+	sw a0, 0(s0)
+	addi s0, s0, 4
+	addi s1, s1, -1
+	bnez s1, loop
+
+	addi s0, s0, -4
+	li s1, 25
+
+	la a0, output
+	li a7, SYS_printStr
+	ecall
+
+	# Exit
+	li a0, 0
+	li a7, SYS_exit
+	ecall
