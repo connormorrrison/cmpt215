@@ -79,6 +79,46 @@ read_i_j:
 	ecall
 	mv s3, a0	# s3 = j
 
+	# Call sum_range(array, n, i, j)
+	la a0, array	# Array
+	mv a1, s1	# a1 = n
+	mv a2, s2	# a2 = i
+	mv a3, s3	# a3 = j
+	jal ra, sum_range
+
+	# Print prompt result
+	la a0, prompt_result
+	li a7, SYS_printStr
+	ecall
+
+	# Print integer
+	
+	# Print newline
+	la a0, newline
+	li a7, SYS_printStr
+	ecall
+
+# Parameters:
+# a0 = array
+# a1 = n
+# a2 = i
+# a3 = j
+sum_subarray:
+	# ex. n = 7
+	# ex. i = 6
+	# ex. j = 9	
+
+	# Compute max
+	# ex. max(1, i) = max(1, 6) = 6
+	li t0, 1	# Load lower bound (1, )
+	bge a2, t0, use_i
+
+	# Compute min
+	# ex. min(n, j) = min(7, 9) = 7
+
+use_i:
+	mv t1, a2	# lower
+
 exit:
 	li a0, 0
 	li a7, SYS_exit
