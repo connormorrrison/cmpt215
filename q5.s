@@ -30,7 +30,7 @@ _start:
 	# Read in n
 	li a7, SYS_readInt
 	ecall
-	mv s1, a0	# s0 = n
+	mv s1, a0	# s1 = n
 	
 	# Ensure n <= 25
 	li t0, 25
@@ -41,6 +41,8 @@ _start:
 	li t1, 0	# Start counter at 0
 
 read_number_loop:
+	bge t1, s1, read_i_j	# Stop read_number_loop when we have read n numbers	
+
 	# Prompt for number
 	la a0, prompt_number
 	li a7, SYS_printStr
@@ -56,7 +58,7 @@ read_number_loop:
 	# Repeat read_number_loop
 	j read_number_loop
 
-read_i_j_loop:
+read_i_j:
 	# Prompt for i
 	la a0, prompt_i
 	li a7, SYS_printStr
@@ -78,37 +80,6 @@ read_i_j_loop:
 	mv s3, a0	# s3 = j
 
 exit:
-	li a0, 0
-	li a7, SYS_exit
-	ecall
-
-
-
-
-
-	#la a0, prompt
-	#li a7, SYS_printStr
-	#ecall
-	
-	#la s0, array
-	#li s1, 25
-
-loop:
-	#li a7, SYS_readInt
-	#ecall
-	#sw a0, 0(s0)
-	#addi s0, s0, 4
-	#addi s1, s1, -1
-	#bnez s1, loop
-
-	#addi s0, s0, -4
-	#li s1, 25
-
-	#la a0, output
-	#li a7, SYS_printStr
-	#ecall
-
-	# Exit
 	li a0, 0
 	li a7, SYS_exit
 	ecall
