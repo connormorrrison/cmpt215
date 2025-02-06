@@ -56,7 +56,26 @@ read_number_loop:
 	# Repeat read_number_loop
 	j read_number_loop
 
+read_i_j_loop:
+	# Prompt for i
+	la a0, prompt_i
+	li a7, SYS_printStr
+	ecall	
 
+	# Read in i
+	li a7, SYS_readInt
+	ecall
+	mv s2, a0	# s2 = i
+
+	# Prompt for j
+	la a0, prompt_j
+	li a7, SYS_printStr
+	ecall
+
+	# Read in j
+	li a7, SYS_readInt
+	ecall
+	mv s3, a0	# s3 = j
 
 exit:
 	li a0, 0
