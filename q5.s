@@ -32,6 +32,10 @@ _start:
 	ecall
 	mv s1, a0	# s1 = n
 	
+	# If n < 1, exit immediately
+	li t0, 1
+	blt s1, t0, exit
+
 	# Ensure n <= 25
 	li t0, 25
 	bgt s1, t0, exit
@@ -86,11 +90,18 @@ read_i_j:
 	mv a3, s3	# a3 = j
 	jal ra, sum_range
 
+	mv t0, a0	# Save the returned sum in t0
+
 	# Print prompt result
 	la a0, prompt_result
 	li a7, SYS_printStr
 	ecall
 	
+	# Print sum returned by a0
+	mv a0, t0
+	li a7, SYS_printInt
+	ecall
+
 	# Print newline
 	la a0, newline
 	li a7, SYS_printStr
@@ -102,37 +113,39 @@ exit:
 	ecall
 
 # sum_range(array, n, i, j):
-# Parameters:
-#   a0 = array pointer
-#   a1 = n
-#   a2 = i
-#   a3 = j
-# Return sum
+# a0 = array pointer, a1 = n, a2 = i, a3 = j
+# Return sum in a0
 sum_range:
 	# i = max(1, i)
-	li t0, 1	# t0 = 1
-	bge a2, t0, use_i	# If a2 (i) >= t0 (1), branch to store i
-	mv a2, t0
+	li t0, 1
+	bge a2, t0, use_i	# If i >= 1, keep it as is
+	mv a2, t0	# Otherwise, set i = 1
 
 use_i:
 	# j = min(n, j)
-	bgt a3, a1, use_j	# If a3 (j) >= a1 (n), branch to store_j
-	
-	# Else a3 (j) < a1 (n), fall down to use_j
-	mv a3, a1
+	ble a3, a1, skip_use_j	# If j <= n, keep it as is
+	mv a3, a1	# Otherwise, set j = n
 
-use_j:
+skip_use_j:
 	# If i > j, return 0
 	bgt a2, a3, return_zero
 
-	# Else, we sum from i to j
-	li t2, 0	# t2 = 0 (sum counter)
-
-	addi t1, a2, -1	# Minus 1 from a2 (i) and store in t1
-	add t2, t1, t1	# t2 = 2 * (i - 1)
-	add t2, t2, t2	# t2 = 4 * (i - 1)
-	add t1, a0, t2 	# t1 = array + 4 * (i - 1)
+	li t4, 0	# t4 = sum = 0
+	addi t2, a2, -1	# Convert 1-based indexing to 0-based by subtracting 1
+	add t2, t2, t2 	# t2 = 2 * (i-1)
+	add t2, t2, t2 	# t2 = 4 * (i-1)
+	add t1, a0, t2	# t1 = address of array (0-based indexing)
 	
+sum_loop:
+	lw t3, 0(t1)
+	add t4, t4, t3	# sum += array[i]
+	addi t1, t1, 4	# Move to next element
+	addi a2, a2, 1	# i++
+	ble a2, a3, sum_loop	# If i <= j, continue loop
+
+	# Store final result in a0 and return
+	mv a0, t4
+	ret
 
 return_zero:
 	li a0, 0
