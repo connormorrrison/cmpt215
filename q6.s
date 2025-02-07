@@ -54,8 +54,16 @@ read_n:
 	# Read n
 	li a7, SYS_readInt
 	ecall
+	
+	mv a2, a0	# a2 = n
 
+	# If n <= 0, exit
+	ble a2, 0, exit
 
+exit:
+	li a0, 0
+	li a7, SYS_exit
+	ecall
 	
 
 
