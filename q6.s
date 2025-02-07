@@ -57,10 +57,9 @@ read_n:
 	# Read n
 	li a7, SYS_readInt
 	ecall
-	
 	mv a2, a0	# a2 = n
 
-	# If n <= 0, exit
+	# If n <= 0, exit early
 	blez a2, exit
 
 	######## IMPLEMENT #########
@@ -86,25 +85,35 @@ exit:
 # remove_repeated_characters():
 # a0 = input string, a1 = character to remove, a2 = n, a3 = output string
 # Return modified string in a0
+# t0 = current character in input string
+# t1 = current position in output string
+# t2 = length counter (tracks consecutive occurrences of a1)
+# t3 = current character being copied
 remove_repeated_characters:
 	mv t0, a0	# t0 = input string
 	mv t1, a3	# t1 = output string
+	
+	li t2, 0	# Character length counter
+	
+process_character:
+	lb t3, 0(t0)	# Load the current character to work with
+	beqz t3, done	# If t3 == 0, we have a null terminator, done
+	
+	beq t3, a1, verify_length
 
+verify_length:
+	# Checking t3 (first character) and a1 (character to remove)	
+	addi t2, t2, 1	# Increment counter
+	blt t2, a2, copy_character	# If lenth < n, we can keep copying over to modified string for that char
 
+copy_character:
+	# Save to output string
+	sb t3, 0(t1)
+	addi t1, t1, 1	# Move to next position in output string
 
+next_char:
+	addi t0, t0, 1	# Move to next position in input string
+	j remove_repeated_characters
 
-	######### TESTING #########
-	# TEST: Print output prompt
-	la a0, output_string
-	li a7, SYS_printStr
-	ecall
-
-	# Print original string
-	la a0, original_string
-	li a7, SYS_printStr
-	ecall
-
-	# Exit
-	li a7, SYS_exit
-	li a0, 0
-	ecall
+done:
+	sb zero, 0(t1)	# Output string
