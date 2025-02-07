@@ -52,8 +52,8 @@ read_number_loop:
 	li a7, SYS_readInt
 	ecall
 	sw a0, 0(s0)
-	addi s0, s0, 4
-	addi t1, t1, 1
+	addi s0, s0, 4	# Move to next element
+	addi t1, t1, 1	# Increment counter
 	
 	# Repeat read_number_loop
 	j read_number_loop
@@ -90,36 +90,51 @@ read_i_j:
 	la a0, prompt_result
 	li a7, SYS_printStr
 	ecall
-
-	# Print integer
 	
 	# Print newline
 	la a0, newline
 	li a7, SYS_printStr
 	ecall
 
-# Parameters:
-# a0 = array
-# a1 = n
-# a2 = i
-# a3 = j
-sum_subarray:
-	# ex. n = 7
-	# ex. i = 6
-	# ex. j = 9	
-
-	# Compute max
-	# ex. max(1, i) = max(1, 6) = 6
-	li t0, 1	# Load lower bound (1, )
-	bge a2, t0, use_i
-
-	# Compute min
-	# ex. min(n, j) = min(7, 9) = 7
-
-use_i:
-	mv t1, a2	# lower
-
 exit:
 	li a0, 0
 	li a7, SYS_exit
 	ecall
+
+# sum_range(array, n, i, j):
+# Parameters:
+#   a0 = array pointer
+#   a1 = n
+#   a2 = i
+#   a3 = j
+# Return sum
+sum_range:
+	# i = max(1, i)
+	li t0, 1	# t0 = 1
+	bge a2, t0, use_i	# If a2 (i) >= t0 (1), branch to store i
+	mv a2, t0
+
+use_i:
+	# j = min(n, j)
+	bgt a3, a1, use_j	# If a3 (j) >= a1 (n), branch to store_j
+	
+	# Else a3 (j) < a1 (n), fall down to use_j
+	mv a3, a1
+
+use_j:
+	# If i > j, return 0
+	bgt a2, a3, return_zero
+
+	# Else, we sum from i to j
+	li t2, 0	# t2 = 0 (sum counter)
+
+	addi t1, a2, -1	# Minus 1 from a2 (i) and store in t1
+	add t2, t1, t1	# t2 = 2 * (i - 1)
+	add t2, t2, t2	# t2 = 4 * (i - 1)
+	add t1, a0, t2 	# t1 = array + 4 * (i - 1)
+	
+
+return_zero:
+	li a0, 0
+	ret
+
