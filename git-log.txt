@@ -1,0 +1,152 @@
+commit 5b05fcf251d76a234f726be6c08cc4128dd7179e
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 23:11:48 2025 -0600
+
+    Add written responses for q1-q4
+
+commit c3e437c39e12dfe32c226a70546a4d04b3e5dba1
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 22:19:09 2025 -0600
+
+    Revamp remove_repeated_characters to handle consecutive runs correctly
+    
+    - Adds skip_copy, accumulate_target, and done_process_run logic to skip runs of length n
+    - Code now copy runs shorter than n, and processes leftover runs at function end
+    - Renamed read_n as main
+    - Added documentation in remove_repeated_characters function
+
+commit 2e182da7c8077f0ff999cc61c4849c06dd974f88
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 04:28:37 2025 -0600
+
+    Continued development of remove_repeated_characters
+    
+    - Load current char, if not null terminated, move to verify_length
+    - verify_length copies char one by one, then moves to next char
+
+commit bb5bc4a687daae74e94a2d3a5c51ebb70817070f
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 03:05:21 2025 -0600
+
+    Add additional printing in read_n; move input and output strings temp registers
+
+commit e72d34bd9449691d272427225fd9e9a70b272d08
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 00:45:50 2025 -0600
+
+    Exit early if n <= 0
+
+commit aad3445a064dcf16b9b9cf068dd2cea32e4bddcf
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 7 00:32:51 2025 -0600
+
+    Updated Makefile for q6.s and implemented input
+    
+    - Added printing and reading prompts for string, character and n
+    - Added q6.s to Makefile
+
+commit d97e6bd6721428b7b83223b790c15085f4aae08c
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Feb 6 23:25:34 2025 -0600
+
+    Resolved incorrect addition for sum_range
+    
+    - Fixed issue with returned value, we now save the retuned sum in t0,
+      preventing overriding and incorrect result
+    - Adjusted commenting sum_range function
+
+commit 1013d813015dfbc437172dc0c0a85afdb0586214
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Feb 6 19:10:43 2025 -0600
+
+    Fix sum_range bounds
+    
+    - Ensure i is at least 1 by comparing with 1 and updating if necessary
+    - Ensure j is not greater than n by comparing with n and updating if necessary
+    - Initial array index computing
+
+commit 08bca62a549518e3e8847d2d9df50e729b0fb27c
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Thu Feb 6 00:44:26 2025 -0600
+
+    Add beginning code fragment for SYS calls, read-only data, uninitialized data, code section, and _start
+
+commit fb1f9b802ff72cb28bbed72eb498e0cfc16057c0
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Feb 5 21:06:05 2025 -0600
+
+    Added result printing in read_i_j; sub array logic still needed
+
+commit dcccaaa3ca27d8b14e0735680d2b727d98b7f4a2
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Feb 5 19:00:11 2025 -0600
+
+    Fix infinite loop in read_number_loop
+
+commit b4b7531ed18e03afa4f671ae7c78b82f50abaaef
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Feb 5 18:12:13 2025 -0600
+
+    Prompt and store i and j
+
+commit 4a2ddc87f931b31ba338049b43119d841e1d5938
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Feb 5 17:45:07 2025 -0600
+
+    Implemented read_number_loop; prompt and read number, store in array and increment counter
+
+commit 5a0ed44ca696ef19d1e8fe63f04603d4e8b54691
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Wed Feb 5 16:55:16 2025 -0600
+
+    Continued implementation on q5.s
+    
+    - Reformatted _start to prompt for n first
+    - Check for if n <= 25
+    - Redoing array logic to increment up
+
+commit e8d1ea441ca62c8b757925b9a01d1b7ec3b63223
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Tue Feb 4 22:57:54 2025 -0600
+
+    Add integer input array loop
+
+commit b2454d881de9db93f6e8bb6bd3ad57a4b065813f
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Tue Feb 4 21:43:40 2025 -0600
+
+    Updated Makefile and began q5.s implementation
+    
+    - Updated Makefile to build q5.s
+    - Added env calls, read-only data section, uninitialized data section
+      and beginning prompt call and array initialization to q5.s
+
+commit 1af2f68062d558fea1e9d8785859b2a6c6716f55
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Tue Feb 4 13:17:52 2025 -0600
+
+    Add empty q1-4.txt, q5.s, and q6.s files to project
+
+commit a2d63a069e5ddc3ad8f5b63efe644bd3fb0ba12d
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Tue Feb 4 13:13:49 2025 -0600
+
+    Removed hello_world.s and strlen.s and created a2 branch
+
+commit d6ba8db92e42c8895fddc1364b5900e6583619de
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 15:45:00 2025 -0600
+
+    Added run.sh file
+
+commit b3e73ac7ea3d3790a769dc6fe0be8e7c734cc81a
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 15:00:52 2025 -0600
+
+    Added working Makefile and hello_world.s
+
+commit 91e147d8961b310713a29c93d15f4273d7b74bc4
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Jan 17 14:39:10 2025 -0600
+
+    initial commit
