@@ -7,7 +7,7 @@
 # Read-only data section
 	.section .rodata
 prompt_string:    .asciz "Enter string: "
-prompt_character: .asciz "Enter characters: "
+prompt_character: .asciz "Enter character: "
 prompt_n:         .asciz "Enter n: "
 output_message:    .asciz "Modified string: "
 newline:          .asciz "\n"
@@ -48,7 +48,7 @@ read_character:
 
 	lb a1, character_to_remove	# Load the character to remove
 
-read_n:
+main:
 	# Print n prompt
 	li a7, SYS_printStr
 	la a0, prompt_n
@@ -62,9 +62,10 @@ read_n:
 	# If n <= 0, exit early
 	blez a2, exit
 
-	######## IMPLEMENT #########
-	# Call _ function
-	# IMPLEMENT
+	# Call function
+	la a0, input_string
+	la a3, output_string
+	jal ra, remove_repeated_characters
 
 	# Print output string prompt
 	li a7, SYS_printStr
@@ -73,47 +74,104 @@ read_n:
 
 	# Print modified string
 	li a7, SYS_printStr
-	la a0, modified_string
+	la a0, output_string
 
-	j read_n	# Loop to prompt for n
+	j main	# Loop to prompt for n
+
+valid_n:
+	la a0, input_string
+	la a3, output_string
+	jal ra, remove_repeated_characters
 
 exit:
 	li a0, 0
 	li a7, SYS_exit
 	ecall
-	
-# remove_repeated_characters():
-# a0 = input string, a1 = character to remove, a2 = n, a3 = output string
-# Return modified string in a0
-# t0 = current character in input string
-# t1 = current position in output string
-# t2 = length counter (tracks consecutive occurrences of a1)
-# t3 = current character being copied
+
+# remove_repeated_characters:
+#
+# a0 = input string
+# a1 = target character
+# a2 = n 
+# a3 = output string
+#
+# t0 = current input character
+# t1 = current output position
+# t2 = counter for occurrences of target character
+# t3 = current character
+# t4 = counter for copy loop
 remove_repeated_characters:
-	mv t0, a0	# t0 = input string
-	mv t1, a3	# t1 = output string
-	
-	li t2, 0	# Character length counter
-	
+	# Store input, and output string pointers
+	mv t0, a0
+	mv t1, a3
+	li t2, 0
+
 process_character:
-	lb t3, 0(t0)	# Load the current character to work with
-	beqz t3, done	# If t3 == 0, we have a null terminator, done
+	lb t3, 0(t0)	# Load current character
+	beqz t3, done	# If null terminator, branch to done
+
+	# If the current character equals the target character, increment target counter
+	beq t3, a1, accumulate_target
+    
+not_target:
+	beq t2, zero, copy_current	# Counter for target occurrences is zero, branch to copy_current
+
+	# Compare if (occurrence counter) == (n), branch to skip_copy
+	beq t2, a2, skip_copy
 	
-	beq t3, a1, verify_length
+	# Otherwise, copy the rest of the available run (ie. number of target occurrences != n).
+	j copy_previous
 
-verify_length:
-	# Checking t3 (first character) and a1 (character to remove)	
-	addi t2, t2, 1	# Increment counter
-	blt t2, a2, copy_character	# If lenth < n, we can keep copying over to modified string for that char
+accumulate_target:
+	addi t2, t2, 1	# Increment counter for target occurrences
+	j next_character
 
-copy_character:
-	# Save to output string
+skip_copy:
+	# Run length equals n, don't copy the run anymore
+	li t2, 0	# Reset counter
+	
+	# Continue copying non-target current character
 	sb t3, 0(t1)
-	addi t1, t1, 1	# Move to next position in output string
+	addi t1, t1, 1
+	j next_character
 
-next_char:
-	addi t0, t0, 1	# Move to next position in input string
-	j remove_repeated_characters
+copy_previous:
+	# Copy the entire run stored in t2 (which is not equal to n)
+	mv t4, t2	# t4 = number of target characters to copy
+
+copy_loop:
+	beqz t4, copy_current
+	sb a1, 0(t1)	# Copy the target character into output
+	addi t1, t1, 1
+	addi t4, t4, -1
+	j copy_loop
+
+copy_current:
+	li t2, 0	# Reset run counter
+	sb t3, 0(t1)	# Copy the current non-target character
+	addi t1, t1, 1
+
+next_character:
+	addi t0, t0, 1	# Advance input pointer
+	j process_character
 
 done:
-	sb zero, 0(t1)	# Output string
+	# If a pending run exists, process it
+	bgtz t2, done_process_run
+	j finish
+
+done_process_run:
+	# If the remaining run equals n, skip
+	beq t2, a2, finish
+	mv t4, t2	# t4 = remaining run count
+
+done_copy_loop:
+	beqz t4, finish
+	sb a1, 0(t1)	# Copy target character into output
+	addi t1, t1, 1
+	addi t4, t4, -1
+	j done_copy_loop
+
+finish:
+	sb zero, 0(t1)	# Null terminate output string
+	ret
