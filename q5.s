@@ -74,7 +74,7 @@ exit:
 # a1 = j
 # a2 = k
 # Returns:
-# 
+# a0 = result
 c215:
 	addi sp, sp, -12	# Allocate 12 bytes on the stack
 	sw ra, 0(sp)		# Save return address
@@ -83,9 +83,9 @@ c215:
 	sw s2, 12(sp)
 	
 	# Save arguments
-	mv s0, a0
-	mv s1, a1
-	mv s2, a2
+	mv s0, a0		# s0 = i
+	mv s1, a1		# s1 = j
+	mv s2, a2		# s2 = k
 
 	# Base case (c215(1, 1, 1))
 	bnez s0, not_base_case
@@ -95,6 +95,33 @@ c215:
 	j c215_exit		
 
 not_base_case:
+	# First recursive call c215([(k+1)/2], [(i+j)/4], [|i-j|/2])
+	# Calculate (k+1)/2
+	addi t0, s2, 1		# t0 = k+1
+	srai t0, t0, 1		# t0 = (k+1)/2
+
+	# Calculate (i+j)/4
+	addi t1, s0, s1		# t1 = (i+j)
+	srai t1, t1, 2 		# t1 = i+j)/4
+
+	# Calculate |i-j|/2
+	sub t2, s0, s1		# t2 = i-j
+	neg t3, t2		# t3 = -(i-j)
+	max t2, t2, t3		# t2 = |i-j|
+	srai t2, t2, 1		# t2 = |i-j|/2
+	
+
+        # Second recursive call c215([(i+k)/2], [|i-k|/2], [(j+3)/4])
+        # Calculate (i+k)/2
+        # Calculate |i-k|/2
+        # Calcualte (j+3)/4
+
+        # Third recursive call c215([(i+j)/4], [|j-k|/2], [(i+1)/4])
+        # Calculate (i+j)/4
+        # Calculate |j-k|/2
+        # Calcualte (i+1)/4
+
+	# Result = term1 + term2 + term3 + 1
 
 
 c215_exit:

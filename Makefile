@@ -4,7 +4,8 @@ CC=$(PREF)gcc
 AS=$(PREF)as
 LD=$(PREF)ld
 
-ASFLAGS=-march=rv32i -mabi=ilp32 -g
+ASFLAGS=-march=rv32ifdzbb -mabi=ilp32 -g
+# ASFLAGS=-march=rv32i -mabi=ilp32 -g
 # ASFLAGS64=-march=rv64gc -mabi=lp64d -g
 
 LDFLAGS=-m elf32lriscv --no-relax
