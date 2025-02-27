@@ -30,17 +30,30 @@ _start:
 
 
 	# Compute constants
-	# Convert 1 to float
+	# 1.0
 	li t0, 1
-	fcvt.s.w f0, t0
+	fcvt.s.w f0, t0		# f0 = 1.0
 
-	# Convert 2 to float
+	# 2.0
 	li t0, 2
-	fcvt.s.w f1, t0
+	fcvt.s.w f1, t0		# f1 = 2.0
 	
-	# Convert 6 to float
+	# 6.0
 	li t0, 6
-	fcvt.s.w f2, t0
+	fcvt.s.w f2, t0		# f2 = 6.0
+
+	# sqrt(3)
+	li t0, 3
+	fcvt.s.w f3, t0
+	fsqrt.s f3, f3		# f3 = sqrt(3)
+
+	# 1/sqrt(3)
+	fdiv.s f4, f0, f3	# f4 = 1/sqrt(3)
 
 
-	
+	# Print result message
+	# Print result
+	# Print newline
+
+
+
