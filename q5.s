@@ -6,10 +6,11 @@
 
 
 # Read-only data section
+	.section .rodata
 prompt_i:       .asciz "Enter i: "
 prompt_j:       .asciz "Enter j: "
 prompt_k:       .asciz "Enter k: "
-result_message: .asciz "C215 result: "
+result_message: .asciz "Result: "
 newline:        .asciz "\n"
 
 
