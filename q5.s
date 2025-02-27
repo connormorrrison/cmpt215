@@ -4,6 +4,7 @@
 	.equ SYS_readInt, 245
 	.equ SYS_printStr, 248
 
+
 # Read-only data section
 prompt_i:       .asciz "Enter i: "
 prompt_j:       .asciz "Enter j: "
@@ -11,9 +12,11 @@ prompt_k:       .asciz "Enter k: "
 result_message: .asciz "C215 result: "
 newline:        .asciz "\n"
 
+
 # Code section
 	.section .text
 	.globl _start
+
 
 _start:
 	# Prompt for i
@@ -83,10 +86,12 @@ _start:
 	li a7, SYS_printStr
 	ecall
 
+
 exit:
 	li a0, 0
 	li a7, SYS_exit
 	ecall
+
 
 # Arguments:
 # a0 = i
@@ -113,6 +118,7 @@ c215:
 	bnez s2, recursive_case
 	li a0, 1
 	j c215_exit		
+
 
 recursive_case:
 	# First recursive call c215([(k+1)/2], [(i+j)/4], [|i-j|/2])
