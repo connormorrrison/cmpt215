@@ -88,13 +88,13 @@ c215:
 	mv s2, a2		# s2 = k
 
 	# Base case (c215(1, 1, 1))
-	bnez s0, not_base_case
-	bnez s1, not_base_case
-	bnez s2, not_base_case
+	bnez s0, recursive_case
+	bnez s1, recursive_case
+	bnez s2, recursive_case
 	li a0, 1
 	j c215_exit		
 
-not_base_case:
+recursive_case:
 	# First recursive call c215([(k+1)/2], [(i+j)/4], [|i-j|/2])
 	# Calculate (k+1)/2
 	addi t0, s2, 1		# t0 = k+1
@@ -110,16 +110,58 @@ not_base_case:
 	max t2, t2, t3		# t2 = |i-j|
 	srai t2, t2, 1		# t2 = |i-j|/2
 	
+	# First recursive call
+	mv a0, t0		# a0 = (k+1)/2
+	mv a1, t1		# a1 = (i+j)/4
+	mv a2, t2		# a2 = |i-j|/2
+	call c215
+	mv s3, a0		# Store result of first recursive call
+
 
         # Second recursive call c215([(i+k)/2], [|i-k|/2], [(j+3)/4])
         # Calculate (i+k)/2
+	add t0, s0, s2		# t0 = i+k
+	srai t0, t0, 1		# t0 = (i+k)/2
+
         # Calculate |i-k|/2
-        # Calcualte (j+3)/4
+	sub t1, s0, s2		# t1 = i-k
+	neg t3, t1		# t3 = -(i-k)
+	max t1, t1, t3		# t1 = |i-k|
+	srai t1, t1, 1		# t1 = |i-k|/2
+	
+        # Calculate (j+3)/4
+	addi t2, s1, 3		# t2 = j+3
+	srai t2, t2, 2		# t2 = (j+3)/4
+
+	# Second recursive call
+	mv a0, t0		# a0 = (i+k)/2
+	mv a1, t1		# a1 = |i-k|/2
+	mv a2, t2		# a2 = (j+3)/4
+	call c215
+	add s3, s3, a0		# Add result of second call
+
 
         # Third recursive call c215([(i+j)/4], [|j-k|/2], [(i+1)/4])
-        # Calculate (i+j)/4
+	# Calculate (i+j)/4
+	add t0, s0, s1		# t0 = i+j
+	srai t0, t0, 2		# t0 = (i+j)/4
+
         # Calculate |j-k|/2
-        # Calcualte (i+1)/4
+	sub t1, s1, s2		# t1 = j-k
+	neg t3, t1		# t3 = -(j-k)
+	max t1, t1, t3		# t1 = |j-k|
+	srai t1, t1, 1		# t1 = |j-k|/2
+
+        # Calculate (i+1)/4
+	addi t2, s0, 1		# t2 = i+1
+	srai t2, t2, 2		# t2 = (i+1)/4
+
+	# Third recursive call
+	mv a0, t0		# a0 = (i+j)/4
+	mv a1, t1		# a1 = |j-k|/2
+	mv a2, t2		# a2 = (i+1)/4
+	call c215
+	add s3, s3, a0		# Add result of second call
 
 	# Result = term1 + term2 + term3 + 1
 
