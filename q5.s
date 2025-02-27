@@ -9,7 +9,7 @@ prompt_i:       .asciz "Enter i: "
 prompt_j:       .asciz "Enter j: "
 prompt_k:       .asciz "Enter k: "
 result_message: .asciz "C215 result: "
-newline:        .asicz "\n"
+newline:        .asciz "\n"
 
 # Code section
 	.section .text
@@ -64,6 +64,25 @@ _start:
 	mv a2, s2		# a2 = k
 	call c215
 
+	# Save result of c215 function
+	mv s0, a0
+	
+
+	# Print result message
+	la a0, result_message
+	li a7, SYS_printStr
+	ecall
+	
+	# Print result
+	mv a0, s0
+	li a7, SYS_printInt
+	ecall
+
+	# Print newline
+	la a0, newline
+	li a7, SYS_printStr
+	ecall
+
 exit:
 	li a0, 0
 	li a7, SYS_exit
@@ -76,11 +95,12 @@ exit:
 # Returns:
 # a0 = result
 c215:
-	addi sp, sp, -12	# Allocate 12 bytes on the stack
+	addi sp, sp, -20	# Allocate 16 bytes (ra, s0, s1, s2, s3)
 	sw ra, 0(sp)		# Save return address
 	sw s0, 4(sp)		# Save s0
 	sw s1, 8(sp)		# ...
 	sw s2, 12(sp)
+	sw s3, 16(sp)
 	
 	# Save arguments
 	mv s0, a0		# s0 = i
@@ -101,7 +121,7 @@ recursive_case:
 	srai t0, t0, 1		# t0 = (k+1)/2
 
 	# Calculate (i+j)/4
-	addi t1, s0, s1		# t1 = (i+j)
+	add t1, s0, s1		# t1 = (i+j)
 	srai t1, t1, 2 		# t1 = i+j)/4
 
 	# Calculate |i-j|/2
@@ -164,6 +184,7 @@ recursive_case:
 	add s3, s3, a0		# Add result of second call
 
 	# Result = term1 + term2 + term3 + 1
+	addi a0, s3, 1	
 
 
 c215_exit:
@@ -171,6 +192,7 @@ c215_exit:
 	lw s0, 4(sp)		# Restore s0
 	lw s1, 8(sp)		# ...
 	lw s2, 12(sp)
-	addi sp, sp, 12		# Deallocate 12 bytes on the stack
+	lw s3, 16(sp)
+	addi sp, sp, 20		# Deallocate 20 bytes
 	ret
 
