@@ -7,11 +7,11 @@
 
 # Read-only data section
 	.section .rodata
-prompt_k:       .asciz "Enter k: "
-result_message: .asciz "Result: "
-error_message:  .asciz "Error %: "
-newline:        .asciz "\n"
-pi_constant:    .double 3.14159265358979
+prompt_k:                 .asciz "Enter k: "
+result_message:           .asciz "Result: "
+percentage_error_message: .asciz "Error %: "
+newline:                  .asciz "\n"
+pi_constant:              .double 3.14159265358979
 
 
 # Code section
@@ -82,6 +82,8 @@ end_loop_tk:
 	
 	# Calculate P_n = n * t_k	
 	fcvt.d.w f2, t2
+	
+	# f4 = approximate pi
 	fmul.d f4, f2, f4		# f4 = n * t_k
 
 
@@ -95,6 +97,37 @@ print_results:
 	fmv.x.d a0, f4
 	li a1, 'E'			# Exponent notation
 	li a2, 6			# 6 decimal digits
+	li a7, SYS_printFloat
+	ecall
+
+	# Print newline
+	la a0, newline
+	li a7, SYS_printStr
+	ecall
+
+
+	# Print percentage error message
+	la a0, percentage_error_message
+	li a7, SYS_printStr
+	ecall
+
+	# Compute percentage error
+	# percentage error = ((approximate_pi - true_pi) / true_pi) * 100
+	fld f6, pi_constant		# f6 = true pi
+	fsub.d f7, f4, f6		# approximate_pi - true_pi
+	fdiv.d f7, f7, f6		# (approximate_pi - true_pi) / true_pi
+
+	li t0, 100
+	fcvt.d.w f8, t0
+	fmul.d f7, f7, f8		# ((approximate_pi - true_pi) / true_pi) * 100	
+	
+	# Convert percentage error to single precision
+	fcvt.s.d f7, f7
+	
+	# Print result
+	fmv.x.s a0, f7
+	li a1, 'E'
+	li a2, 6
 	li a7, SYS_printFloat
 	ecall
 
