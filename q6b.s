@@ -9,7 +9,7 @@
 	.section .rodata
 prompt_k:                 .asciz "Enter k: "
 result_message:           .asciz "Result: "
-percentage_error_message: .asciz "Error %: "
+percentage_error_message: .asciz "Percentage error: "
 newline:                  .asciz "\n"
 pi_constant:              .double 3.14159265358979
 
@@ -94,7 +94,8 @@ print_results:
 	ecall
 
 	# Print result
-	fmv.x.d a0, f4
+	fcvt.s.d f10, f4		# Convert double to single precision
+	fmv.x.w a0, f10			# Move single precision
 	li a1, 'E'			# Exponent notation
 	li a2, 6			# 6 decimal digits
 	li a7, SYS_printFloat
@@ -111,12 +112,14 @@ print_results:
 	li a7, SYS_printStr
 	ecall
 
-	# Compute percentage error
-	# percentage error = ((approximate_pi - true_pi) / true_pi) * 100
-	fld f6, pi_constant		# f6 = true pi
+	# Calculate percentage error
+	# percentage_error = ((approximate_pi - true_pi) / true_pi) * 100
+	la t0, pi_constant
+	fld f6, 0(t0)			# f6 = true pi
 	fsub.d f7, f4, f6		# approximate_pi - true_pi
 	fdiv.d f7, f7, f6		# (approximate_pi - true_pi) / true_pi
-
+	
+	# Convert to percentage
 	li t0, 100
 	fcvt.d.w f8, t0
 	fmul.d f7, f7, f8		# ((approximate_pi - true_pi) / true_pi) * 100	
@@ -124,8 +127,9 @@ print_results:
 	# Convert percentage error to single precision
 	fcvt.s.d f7, f7
 	
+
 	# Print result
-	fmv.x.s a0, f7
+	fmv.x.w a0, f7
 	li a1, 'E'
 	li a2, 6
 	li a7, SYS_printFloat
