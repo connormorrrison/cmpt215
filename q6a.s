@@ -46,7 +46,7 @@ _start:
 	fdiv.s f4, f0, f3		# f4 = 1/sqrt(3) (t_0)
 
 
-	# Counter for start_loop_tk
+	# Counter for loop_tk
 	li t1, 0			# i = 0
 
 
@@ -61,7 +61,7 @@ loop_tk:
 	fdiv.s f4, f5, f4		# (sqrt(t_i^2 + 1) - 1)/t_i
 
 
-	# Increment counter for start_loop_tk
+	# Increment counter for loop_tk
 	addi t1, t1, 1
 	j loop_tk
 
