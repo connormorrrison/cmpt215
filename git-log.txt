@@ -1,3 +1,9 @@
+commit 8313c6a47a19fdc397f4cf12751554ea13093e36
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Feb 28 22:51:32 2025 -0600
+
+    Add written answers to project; updated git log text file
+
 commit 1ddea46c7b360ca2b0d85b6675cc24d2a372c393
 Author: Connor Morrison <tvi340@usask.ca>
 Date:   Fri Feb 28 13:44:46 2025 -0600
