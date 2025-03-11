@@ -40,16 +40,7 @@ $(BUILD_DIR)/%.o : %.s | $(BUILD_DIR)
 # linking ######################################################################
 
 # TODO: complete
-$(BIN_DIR)/q5: $(BUILD_DIR)/q5.o | $(BIN_DIR)
-	$(LD) $(LDFLAGS) $< -o $@
-
-$(BIN_DIR)/q6a: $(BUILD_DIR)/q6a.o | $(BIN_DIR)
-	$(LD) $(LDFLAGS) $< -o $@
-
-$(BIN_DIR)/q6b: $(BUILD_DIR)/q6b.o | $(BIN_DIR)
-	$(LD) $(LDFLAGS) $< -o $@
-
-$(BIN_DIR)/q6c: $(BUILD_DIR)/q6c.o | $(BIN_DIR)
+$(BIN_DIR)/q6: $(BUILD_DIR)/q6.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
 
 # symlinks for executables #####################################################
