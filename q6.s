@@ -1,4 +1,20 @@
+# Function numbers for environment calls
+	.equ SYS_exit, 93
+	.equ SYS_printStr, 248
+	.equ SYS_readStr, 249
 
+
+# Read-only data section
+	.section .rodata
+
+
+# Uninitialized data section
+	.section .bss
+
+
+# Code section
+	.section .text
+	.globl _start
 
 
 # procedure init initializes the free list
@@ -46,3 +62,8 @@ free:
 	sw t0, 4(a1)
 	jalr zero, 0(ra)
 
+
+done:
+	li a0, 0
+	li a7, SYS_exit
+	ecall
