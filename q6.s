@@ -12,7 +12,8 @@ newline:      .asciz "\n"
 
 # Uninitialized data section
 	.section .bss
-str: .space 128
+str:        .space 128
+free_space: .space 120	# 15 nodes (15 nodes x 2 words/node x 4 bytes/word = 120 bytes)
 
 
 # Code section
@@ -47,9 +48,20 @@ _start:
 	li a0, 0
         li a7, SYS_exit
         ecall
+
+
+# Main to initialize list
+main:
+	# Initialize free list
+	la a0, free_space
+	li a1, 15	# Number of nodes
+	jal init	
 	
 
+	
 continue:
+
+insert:
 
 
 # procedure init initializes the free list
