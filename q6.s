@@ -74,22 +74,22 @@ input_loop:
 pre_insert:
 	# Parameters
 	# a0 = ASCII code of letter
-	# a1 = address of list_head
-	# a2 = address of free list
+	# a1 = address of memory word containing pointer to list head
+	# a2 = address of memory word containing pointer to free list
 	mv a0, t2
 	la a1, list_head
 	la a2, free_space
 
 	jal insert
 
-	j input loop
+	j input_loop
 	
 
 pre_delete:
 	# Parameters
 	# a0 = ASCII code of letter
-	# a1 = address of list_head
-	# a2 = address of free list
+	# a1 = address of memory word containing pointer to list head
+	# a2 = address of memory word containing pointer to free list
 	mv a0, t2
 	la a1, list_head
 	la a2, free_list
@@ -99,20 +99,45 @@ pre_delete:
 	j input_loop
 
 
+# Parameters:
+# 	a0 = ASCII code of letter
+# 	a1 = address of memory word containing pointer to list head
+# 	a2 = address of memory word containing pointer to free list
+# Returns:
+# 	a0 = 0 on insertion/duplicate found; 1 if free list was empty
 insert:
-	# Implement
+	lw t2, 0(a1)	# t2 = list head
+	mv t0, a0	# t0 = letter
+	
+	mv t3, zero	# Previous node = NULL
+	mv t4, t2	# Current node = list head
 
 
+find_loop:
+	beqz zero, allocate_node	# Reached the end of the list, allocate a new node
+
+
+allocate_node:
+	# Allocate a new node from free list
+	mv a0, a2
+	jal alloc
+	beqz a0, insert_fail
+
+	
+
+insert_fail:
+	li a0, 1
+
+
+
+# Parameters:
+# 	a0 = ASCII code of letter
+# 	a1 = address of memory word containing pointer to list head
+# 	a2 = address of memory word containing pointer to free list
+# Returns:
+	a0 = 0 always
 delete:
 	# Implement
-
-
-
-
-
-
-
-
 
 
 
@@ -135,6 +160,7 @@ exit:
 	li a0, 0
 	li a7, SYS_exit
 	ecall
+
 
 # procedure init initializes the free list
 # procedure arguments as follows:
@@ -180,5 +206,4 @@ free:
 	sw zero, 0(a1)
 	sw t0, 4(a1)
 	jalr zero, 0(ra)
-
 
