@@ -22,32 +22,12 @@ free_space: .space 120	# 15 nodes (15 nodes x 2 words/node x 4 bytes/word = 120 
 
 
 _start:
-	# Print input prompt
-	la a0, input_prompt
-	li a7, SYS_printStr
-	ecall
-
-	# Read in input prompt
-	la a0, str
-	li a1, 128
-	li a7, SYS_readStr
-	ecall
-
-	# Load the first character of the string as the command
-	la t0, str
-	lb t1, 0(t0)	# I or D command
-	lb t2, 1(t0)	# The char to store
-
-	# Check if command is valid
-	li t3, 'I'
-	li t4, 'D'
-	beq t1, t3, continue
-	beq t1, t4, continue
+	jal main
 	
 	# Exit
 	li a0, 0
-        li a7, SYS_exit
-        ecall
+	li a7, SYS_exit
+	ecall
 
 
 # Main to initialize list
@@ -56,12 +36,32 @@ main:
 	la a0, free_space
 	li a1, 15	# Number of nodes
 	jal init	
-	
+
+input_loop:
+        # Print input prompt
+        la a0, input_prompt
+        li a7, SYS_printStr
+        ecall
+
+        # Read in input prompt
+        la a0, str
+        li a1, 128
+        li a7, SYS_readStr
+        ecall
+
+        # Load the first character of the string as the command
+        la t0, str
+        lb t1, 0(t0)    # I or D command
+        lb t2, 1(t0)    # The char to store
+
+        # Check if command is valid
+        li t3, 'I'
+        li t4, 'D'
+        beq t1, t3, continue
+        beq t1, t4, continue	
 
 	
 continue:
-
-insert:
 
 
 # procedure init initializes the free list
