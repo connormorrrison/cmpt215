@@ -6,16 +6,37 @@
 
 # Read-only data section
 	.section .rodata
+input_prompt: .asciz "Enter command: "
+newline:      .asciz "/n"
 
 
 # Uninitialized data section
 	.section .bss
+str: .space 128
 
 
 # Code section
 	.section .text
 	.globl _start
 
+
+_start:
+	# Print input prompt
+	la a0, input_prompt
+	li a7, SYS_printStr
+	ecall
+
+	# Read in input prompt
+	la a0, str
+	li a1, 128
+	li a7, SYS_readStr
+	ecall
+		
+	# Exit
+	li a0, 0
+        li a7, SYS_exit
+        ecall
+	
 
 # procedure init initializes the free list
 # procedure arguments as follows:
@@ -63,7 +84,7 @@ free:
 	jalr zero, 0(ra)
 
 
-done:
-	li a0, 0
-	li a7, SYS_exit
-	ecall
+#done:
+#	li a0, 0
+#	li a7, SYS_exit
+#	ecall

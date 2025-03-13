@@ -18,7 +18,7 @@ LIB_DIR = lib/$(ARCH)
 BIN_DIR = bin/$(ARCH)
 
 # add your list of binaries here
-BINARIES=q5 q6a q6b q6c
+BINARIES=q6
 
 .PHONY: all clean
 
