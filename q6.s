@@ -14,6 +14,7 @@ newline:      .asciz "\n"
 	.section .bss
 str:        .space 128
 free_space: .space 120	# 15 nodes (15 nodes x 2 words/node x 4 bytes/word = 120 bytes)
+list_head:  .word 0	# Pointer to head of the sorted linked list
 
 
 # Code section
@@ -37,6 +38,12 @@ main:
 	li a1, 15	# Number of nodes
 	jal init	
 
+	# Initialize head to 0
+	la t0, list_head
+	sw zero, 0(t0)	# lList head now equals 0
+	
+	j input_loop
+
 input_loop:
         # Print input prompt
         la a0, input_prompt
@@ -57,12 +64,77 @@ input_loop:
         # Check if command is valid
         li t3, 'I'
         li t4, 'D'
-        beq t1, t3, continue
-        beq t1, t4, continue	
+        beq t1, t3, pre_insert
+        beq t1, t4, pre_delete
 
+	# If the command is not valid
+	j exit
+
+
+pre_insert:
+	# Parameters
+	# a0 = ASCII code of letter
+	# a1 = address of list_head
+	# a2 = address of free list
+	mv a0, t2
+	la a1, list_head
+	la a2, free_space
+
+	jal insert
+
+	j input loop
 	
-continue:
 
+pre_delete:
+	# Parameters
+	# a0 = ASCII code of letter
+	# a1 = address of list_head
+	# a2 = address of free list
+	mv a0, t2
+	la a1, list_head
+	la a2, free_list
+	
+	jal delete
+	
+	j input_loop
+
+
+insert:
+	# Implement
+
+
+delete:
+	# Implement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exit:
+	li a0, 0
+	li a7, SYS_exit
+	ecall
 
 # procedure init initializes the free list
 # procedure arguments as follows:
@@ -110,7 +182,3 @@ free:
 	jalr zero, 0(ra)
 
 
-#done:
-#	li a0, 0
-#	li a7, SYS_exit
-#	ecall
