@@ -119,15 +119,36 @@ find_loop:
 
 allocate_node:
 	# Allocate a new node from free list
-	mv a0, a2
+	mv a0, a2	# a0 = free list pointer address
 	jal alloc
-	beqz a0, insert_fail
-
+	beqz a0, insert_fail	# If allocation fails (a0 = 0), jump to failure
 	
+	# Otherwise allocation does not fail
+	# t0 = letter
+	# t4 = Current node
+	sb t0, 0(a0)	# t0 = letter, store into a0
+	sw t4, 4(a0)	# New node's next pointer to current node (t4)
+
+	# Insert the new node into the list
+	# t3 = previous node
+	bnez t3, set_prev_next	# If previous node != NULL, update it's next pointer
+	sw a0, 0(a1)	# Otherwise, update the list head
+	j insert_success		
+
+insert_success:
+	li a0, 0
+	j insert_done
 
 insert_fail:
-	li a0, 1
+	li a0, 1	# Return 1 for failure
 
+
+set_prev_next:
+	sw a0, 4(t3)	# Set previous node's next pointer to the new node
+
+insert_done:
+	
+	ret
 
 
 # Parameters:
