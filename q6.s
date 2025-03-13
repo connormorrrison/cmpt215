@@ -7,7 +7,7 @@
 # Read-only data section
 	.section .rodata
 input_prompt: .asciz "Enter command: "
-newline:      .asciz "/n"
+newline:      .asciz "\n"
 
 
 # Uninitialized data section
@@ -31,12 +31,26 @@ _start:
 	li a1, 128
 	li a7, SYS_readStr
 	ecall
-		
+
+	# Load the first character of the string as the command
+	la t0, str
+	lb t1, 0(t0)	# I or D command
+	lb t2, 1(t0)	# The char to store
+
+	# Check if command is valid
+	li t3, 'I'
+	li t4, 'D'
+	beq t1, t3, continue
+	beq t1, t4, continue
+	
 	# Exit
 	li a0, 0
         li a7, SYS_exit
         ecall
 	
+
+continue:
+
 
 # procedure init initializes the free list
 # procedure arguments as follows:
