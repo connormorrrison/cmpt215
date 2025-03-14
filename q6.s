@@ -12,10 +12,10 @@ newline:      .asciz "\n"
 
 # Uninitialized data section
 	.section .bss
-str:        .space 128
-free_space: .space 120	# 15 nodes (15 nodes x 2 words/node x 4 bytes/word = 120 bytes)
-list_head:  .word 0	# Pointer to head of the sorted linked list
-
+str:         .space 128
+free_space:  .space 120	# 15 nodes (15 nodes x 2 words/node x 4 bytes/word = 120 bytes)
+list_head:   .word 0	# Pointer to head of the sorted linked list
+char_buffer: .space 2
 
 # Code section
 	.section .text
@@ -58,14 +58,18 @@ input_loop:
 
         # Load the first character of the string as the command
         la t0, str
-        lb t1, 0(t0)    # I or D command
+        lb t1, 0(t0)    # Command letter (I, D, or P)
         lb t2, 1(t0)    # The char to store
 
         # Check if command is valid
         li t3, 'I'
         li t4, 'D'
+	li t5, 'P'
+	
+	# Call appropriate function
         beq t1, t3, pre_insert
         beq t1, t4, pre_delete
+	beq t1, t5, pre_print
 
 	# If the command is not valid
 	j exit
@@ -92,11 +96,21 @@ pre_delete:
 	# a2 = address of memory word containing pointer to free list
 	mv a0, t2
 	la a1, list_head
-	la a2, free_list
+	la a2, free_space
 	
 	jal delete
 	
 	j input_loop
+
+
+pre_print:
+	jal print_list
+
+	j input_loop
+
+
+print_list:
+	# Implement
 
 
 # Parameters:
@@ -106,49 +120,7 @@ pre_delete:
 # Returns:
 # 	a0 = 0 on insertion/duplicate found; 1 if free list was empty
 insert:
-	lw t2, 0(a1)	# t2 = list head
-	mv t0, a0	# t0 = letter
-	
-	mv t3, zero	# Previous node = NULL
-	mv t4, t2	# Current node = list head
-
-
-find_loop:
-	beqz zero, allocate_node	# Reached the end of the list, allocate a new node
-
-
-allocate_node:
-	# Allocate a new node from free list
-	mv a0, a2	# a0 = free list pointer address
-	jal alloc
-	beqz a0, insert_fail	# If allocation fails (a0 = 0), jump to failure
-	
-	# Otherwise allocation does not fail
-	# t0 = letter
-	# t4 = Current node
-	sb t0, 0(a0)	# t0 = letter, store into a0
-	sw t4, 4(a0)	# New node's next pointer to current node (t4)
-
-	# Insert the new node into the list
-	# t3 = previous node
-	bnez t3, set_prev_next	# If previous node != NULL, update it's next pointer
-	sw a0, 0(a1)	# Otherwise, update the list head
-	j insert_success		
-
-insert_success:
-	li a0, 0
-	j insert_done
-
-insert_fail:
-	li a0, 1	# Return 1 for failure
-
-
-set_prev_next:
-	sw a0, 4(t3)	# Set previous node's next pointer to the new node
-
-insert_done:
-	
-	ret
+	# Implement
 
 
 # Parameters:
@@ -156,31 +128,19 @@ insert_done:
 # 	a1 = address of memory word containing pointer to list head
 # 	a2 = address of memory word containing pointer to free list
 # Returns:
-	a0 = 0 always
+#	a0 = 0 always
 delete:
 	# Implement
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 exit:
 	li a0, 0
 	li a7, SYS_exit
 	ecall
+
+####################################################################################################
+# Provided: Do not edit
+####################################################################################################
 
 
 # procedure init initializes the free list
@@ -227,4 +187,3 @@ free:
 	sw zero, 0(a1)
 	sw t0, 4(a1)
 	jalr zero, 0(ra)
-
