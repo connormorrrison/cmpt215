@@ -43,6 +43,7 @@ $(BUILD_DIR)/%.o : %.s | $(BUILD_DIR)
 $(BIN_DIR)/q6: $(BUILD_DIR)/q6.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
 
+
 # symlinks for executables #####################################################
 
 $(BINARIES) : % : $(BIN_DIR)/%

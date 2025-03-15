@@ -1,0 +1,216 @@
+Question 1:
+
+(a) RegWrite = 0
+RegWrite is the control signal that instructs the register file to save a computed value (ALU or memory output) into a register. When RegWrite is stuck at 0, the register file’s write input is never asserted. As a result, any instruction that needs to update a register (R‐type ALU instructions, addi, lw) will fail because, even if a correct value is generated, it is never written back. However, instructions that do not store a register result (like sw or beq) still work correctly.
+
+
+(b) ALUOp0 = 0
+The two bits ALUOp1 and ALUOp0 determine the ALU operation. Usually, 00 means add (used by lw/sw), 01 means subtract (used by beq), and 10 means the ALU operation is determined by the R‐type instruction’s funct field. If ALUOp0 is stuck at 0, we can never form the 01 pattern necessary for subtraction. Thus, beq will break because it relies on subtract to compare register values. However, R‐type instructions (10) and load/store instructions (00) remain unaffected.
+
+
+(c) ALUOp1 = 0
+When ALUOp1 is stuck at 0, we cannot form the 10 pattern that tells the ALU to look at the funct field for R‐type instructions. R‐type operations fail, since they need that pattern to specify add, subtract, AND, OR, etc. However, instructions like lw and sw (which need 00 for add) and beq (which needs 01 for subtract) still work correctly.
+
+
+(d) MemtoReg = 0
+MemtoReg selects the data that goes back into the register file: a 0 chooses the ALU result, and a 1 chooses the memory output (for lw). If MemtoReg is permanently 0, the datapath will always route the ALU output to be written back. Thus, lw fails because the memory data is never selected. Instructions that use the ALU result (R‐type, addi, etc.) are unaffected.
+
+
+(e) ALUSrc = 0
+ALUSrc controls whether the second input to the ALU comes from the register file (when 0) or from the sign-extended immediate field (when 1). A constant 0 signal means the datapath never selects the immediate, so instructions such as addi, lw, and sw (which need the immediate) will not work. However, R‐type operations and beq continue to function, as they need two register values rather than a register plus an immediate.
+
+
+
+Question 2:
+"sw_inc s0, 500(s1)" should perform:
+1. Store the contents of s0 into memory at address [s1 + 500]
+2. Increment s1 by 4 (to point to the next word)
+
+To do this we need to modify the single cycle datapath:
+- We need to add a path to write back to the base register (s1 in this example) after incrementing it by 4:
+	- Add a path from the ALU output (which already calculates the memory address) back to the register file, specifically to write to the base register (rs1).
+	- Modify the control logic to enable writing to the base register during sw_inc instruction.
+	- Add a multiplexer to select between 1. rd field (bits 11-7) for regular register write instructions and 2. rs1 field (bits 19-15) for sw_inc
+	- Add an adder to increment the ALU result by 4 before writing back to the register file.
+	- Add a multiplexer to select between the normal write data and this incremented value.
+
+Control signals for sw_inc:
+- ALUSrc = 1 (Use immediate value for ALU operation)
+- MemWrite = 1 (Write to memory)
+- MemRead = 0 (Don't read from memory)
+- RegWrite = 1 (Enable writing to register file)
+- RegSrc = 1 (New signal to select rs1 as the register write address)
+- MemtoReg = 0 (Select ALU result for register write data)
+- ALUOp = 00 (For add operation [s1 + 500])
+- IncrementAddr = 1 (New signal to select the incremented address)
+- Branch = 0 (Not a branch instruction)
+- Jump = 0 (Not a jump instruction)
+
+
+
+Question 3.
+1. sub s4, s3, s4
+- IF: Cycle 1
+- ID: Cycle 2
+- EX: Cycle 3
+- MEM: Cycle 4
+- WB: Cycle 5 (s4 is written)
+
+2. and s3, s1, s3
+- IF: Cycle 2
+- ID: Cycle 3
+- EX: Cycle 4
+- MEM: Cycle 5
+- WB: Cycle 6 (s3 is written)
+
+3. add s1, s4, s6
+- IF: Cycle 3
+- Stall: Cycle 4 (delay ID until s4 is ready)
+- ID: Cycle 5 (reads the updated s4)
+- EX: Cycle 6
+- MEM: Cycle 7
+- WB: Cycle 8 (s1 is written)
+
+4. lw s6, 0(s1)
+- IF: Cycle 4
+- Stall: Cycles 5, 6, and 7 (delay ID until Cycle 8)
+- ID: Cycle 8 (reads the updated s1)
+- EX: Cycle 9
+- MEM: Cycle 10
+- WB: Cycle 11 (s6 is written)
+
+5. sw s1, 0(s6)
+- IF: Cycle 5
+- Stall: Cycles 6, 7, 8, 9, and 10 (delay ID until Cycle 11)
+- ID: Cycle 11 (reads the updated s6)
+- EX: Cycle 12
+- MEM: Cycle 13
+- WB: Cycle 14 (instruction completes)
+
+Therefore:
+- Instruction 1 completes at Cycle 5
+- Instruction 2 completes at Cycle 6
+- Instruction 3 completes at Cycle 8
+- Instruction 4 completes at Cycle 11
+- Instruction 5 completes at Cycle 14
+
+
+
+Question 4:
+With forwarding, the processor can forward values from the EX/MEM and MEM/WB pipeline registers to earlier stages, eliminating many data hazards.
+
+1. sub s4, s3, s4
+- Cycle 1: IF
+- Cycle 2: ID
+- Cycle 3: EX
+- Cycle 4: MEM
+- Cycle 5: WB
+
+2. and s3, s1, s3
+- Cycle 2: IF
+- Cycle 3: ID
+- Cycle 4: EX
+- Cycle 5: MEM
+- Cycle 6: WB
+
+3. add s1, s4, s6
+- Cycle 3: IF
+- Cycle 4: ID
+- Cycle 5: EX
+- Cycle 6: MEM
+- Cycle 7: WB
+
+4. lw s6, 0(s1)
+- Cycle 4: IF
+- Cycle 5: ID
+- Cycle 6: EX
+- Cycle 7: MEM
+- Cycle 8: WB
+
+5. sw s1, 0(s6)
+- Cycle 5: IF
+- Cycle 6: ID
+- Cycle 7: EX
+- Cycle 8: MEM
+- Cycle 9: WB
+
+Therefore, the clock cycles at which each instruction completes (WB stage) are:
+1. sub s4, s3, s4: Cycle 5
+2. and s3, s1, s3: Cycle 6
+3. add s1, s4, s6: Cycle 7
+4. lw s6, 0(s1): Cycle 8
+5. sw s1, 0(s6): Cycle 9
+
+
+
+Question 5:
+
+The loop body itself is executed 20 times. Thus:
+- Branch 1 is encountered 6 times per loop iteration, with the pattern T, N, T, N, T, N repeated each iteration.
+	- Total outcomes over 20 iterations: 6 x 20 = 120.
+- Branch 2 is encountered 4 times per loop iteration, with the pattern N, N, N, T repeated each iteration.
+	- Total outcomes over 20 iterations: 4 x 20 = 80.
+- Branch 3 is encountered 8 times per loop iteration, with the pattern T, T, N, T, T, N, T, T repeated each iteration.
+	- Total outcomes over 20 iterations: 8 x 20 = 160.
+
+
+(a) Give the branch prediction accuracy (i.e., the percentage of times for which the branch outcome is predicted correctly) for each branch, assuming a scheme in which branches are always predicted as not taken.
+
+1. Branch 1
+- Pattern each iteration = T, N, T, N, T, N.
+	- Taken = 3 times, Not Taken = 3 times (per iteration).
+	- Over 20 iterations: 60 taken, 60 not taken.
+	- Always predicting "Not Taken" is correct only on the 60 not-taken instances.
+Accuracy = 60 / 120 = 50%.
+
+2. Branch 2
+- Pattern each iteration = N, N, N, T.
+	- Taken = 1 time, Not Taken = 3 times (per iteration).
+	- Over 20 iterations: 20 taken, 60 not taken.
+	- Always predicting "Not Taken" is correct on the 60 not-taken instances.
+Accuracy = 60 / 80 = 75%.
+
+3. Branch 3
+- Pattern each iteration = T, T, N, T, T, N, T, T.
+	- Taken = 6 times, Not Taken = 2 times (per iteration).
+	- Over 20 iterations: 120 taken, 40 not taken.
+	- Always predicting "Not Taken" is correct only on the 40 not-taken instances.
+Accuracy = 40 / 160 = 25%.
+
+
+(b) Repeat part (a), but now assuming use of a 1-bit branch predictor that predicts the branch outcome to be whatever the previous outcome was (for that same branch), with state initialized to predict not taken.
+
+A 1-bit predictor for each branch remembers only the last outcome of that branch (T or N). We track each outcome in order and update the predictor bit (0 = predict N, 1 = predict T). The predictor starts at 0 ("predict Not Taken").
+
+1. Branch 1
+- Pattern = T, N, T, N, T, N repeated.
+- By simulating you find it predicts incorrectly every time in that repeating pattern (it flips each time but always chases the last outcome and never aligns on the next one).
+Accuracy = 0%.
+
+2. Branch 2
+- Pattern = N, N, N, T. Across 20 iterations, in the very first 4 outcomes, the predictor starts at "predict N," which matches the first three N outcomes, but misses on the T. After that, each iteration tends to have 2 correct and 2 incorrect. - Overall, the simulation yields 41 correct out of 80.
+Accuracy = 51.25%.
+
+3. Branch 3
+- Pattern = T, T, N, T, T, N, T, T. Over 20 repetitions, it shows 79 correct out of 160.
+Accuracy = 49.38%.
+
+
+(c) Repeat part (a), but now assuming the 2-bit predictor covered in class, initialized to strongly predict not taken (i.e., such that two consecutive incorrect predictions are required before it would change its prediction to taken).
+
+We use the standard 2-bit saturating counter per branch:
+- States:
+	- 0 = Strongly Not Taken
+	- 1 = Weakly Not Taken
+	- 2 = Weakly Taken
+	- 3 = Strongly Taken
+- Predict “Taken” if state >= 2, else predict “Not Taken.”
+- If actual outcome is Taken, increment state (unless already 3).
+- If actual outcome is Not Taken, decrement state (unless already 0).
+- Start at state 0 (strongly predict Not Taken).
+
+Thus:
+1. Branch 1: 60 correct out of 120 = 50%.
+2. Branch 2: 60 correct out of 80 = 75%.
+3. Branch 3: 117 correct out of 160 = 73.12%.
+
