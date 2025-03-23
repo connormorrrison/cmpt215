@@ -40,7 +40,7 @@ $(BUILD_DIR)/%.o : %.s | $(BUILD_DIR)
 # linking ######################################################################
 
 # TODO: complete
-$(BIN_DIR)/q6: $(BUILD_DIR)/q6.o | $(BIN_DIR)
+$(BIN_DIR)/q7: $(BUILD_DIR)/q7.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
 
 
