@@ -1,8 +1,34 @@
+# function numbers for environment calls
+	.equ SYS_exit, 93
+	.equ SYS_readStr, 249
+	.equ SYS_printStr, 248
+	.equ SYS_readInt, 245
+	.equ SYS_printInt, 244
 
 
+# Data section
+	.section .data
+root_ptr:	.word 0
+free_ptr:	.word 0
+buffer:		.space 20	# Buffer for reading input
 
 
+# Node memory
+nodes:		.space 180	# Space for 15 nodes (15 nodes x 3 words/node x 4 bytes/word = 180 bytes)
 
+
+# Read-only data section
+	.section .rodata
+operation_prompt:      .asciz "Enter operation (I = insert, D = delete, S = sumupto): "
+value_prompt:          .asciz "Enter integer value: "
+insert_failed_message: .asciz "Insert failed: free list empty"
+sum_message:           .asciz "Sum of values less than threshold: "
+newline:               .asciz "\n"
+
+
+# Code section
+	.section .text
+	.globl _start
 
 
 ################# DO NOT EDIT ####################

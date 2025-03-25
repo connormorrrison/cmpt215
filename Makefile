@@ -4,8 +4,8 @@ CC=$(PREF)gcc
 AS=$(PREF)as
 LD=$(PREF)ld
 
-ASFLAGS=-march=rv32ifdzbb -mabi=ilp32 -g
-# ASFLAGS=-march=rv32i -mabi=ilp32 -g
+# ASFLAGS=-march=rv32ifdzbb -mabi=ilp32 -g
+ASFLAGS=-march=rv32i -mabi=ilp32 -g
 # ASFLAGS64=-march=rv64gc -mabi=lp64d -g
 
 LDFLAGS=-m elf32lriscv --no-relax
@@ -18,7 +18,7 @@ LIB_DIR = lib/$(ARCH)
 BIN_DIR = bin/$(ARCH)
 
 # add your list of binaries here
-BINARIES=q6
+BINARIES=q7 q7t
 
 .PHONY: all clean
 
@@ -43,6 +43,8 @@ $(BUILD_DIR)/%.o : %.s | $(BUILD_DIR)
 $(BIN_DIR)/q7: $(BUILD_DIR)/q7.o | $(BIN_DIR)
 	$(LD) $(LDFLAGS) $< -o $@
 
+$(BIN_DIR)/q7t: $(BUILD_DIR)/q7t.o | $(BIN_DIR)
+	$(LD) $(LDFLAGS) $< -o $@
 
 # symlinks for executables #####################################################
 
