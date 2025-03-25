@@ -32,8 +32,6 @@ newline:               .asciz "\n"
 
 
 ################# DO NOT EDIT ####################
-
-
 		# procedure init initializes the free list
         	# procedure arguments as follows:
         	#   a0 - address of block of memory to be used for free list
@@ -51,7 +49,6 @@ init_l:   	sw zero, 0(t0)
 init_r:   	jalr zero, 0(ra)
 
 
-
 		# procedure alloc gets a node from the free list
         	# procedure argument as follows:
         	#   a0 - address of word containing the address of the first node in free list
@@ -65,8 +62,6 @@ alloc:		mv t0, a0
 alloc_r:  	jalr zero, 0(ra)
 
 
-
-
 		# procedure free returns a node to the free list
         	# procedure arguments as follows:
         	#   a0 - address of word containing the address of the first node in free list
@@ -77,4 +72,114 @@ free:		lw t0, 0(a0)
 		sw zero, 4(a1)
 	  	sw t0, 8(a1)
 	  	jalr zero, 0(ra)
+################################################
+
+
+
+# Insert procedure
+# Parameters:
+# a0 = integer value to insert
+# a1 = address of word containing root address
+# a2 = address of word containing free list head address
+# Returns:
+# a0 = 0 if successful, 1 if unsuccessful (free list empty)
+insert:
+	# TODO
+
+
+# Delete procedure
+# Parameters:
+# a0 = integer value to delete
+# a1 = address of word containing root address
+# a3 = address of word containing free list head address
+# Returns:
+# none
+delete:
+	# TODO
+
+
+# sumupto procedure
+# Parameters
+# a0 = integer threshold
+# a1 = address of root node
+# Returns:
+# a0: sum of integers less than node
+sumupto:
+	# TODO
+
+
+# Main program
+_start:
+	# Initialize tree and free list
+	la a0, nodes	# Address of node memory
+	li a1, 15	# 15 nodes
+	jal ra init	# Initialize free list
+
+	# Store free list head
+	la t0, free_ptr
+	sw a0, 0(t0)
+	
+	# Main loop
+main_loop:
+	# Prompt for operation
+	la a0, operation_prompt
+	li a7, SYS_printStr
+	ecall
+
+	# Read operation
+	la a0, buffer
+	li a1, 10	# Buffer size
+	li a7, SYS_readStr
+	ecall
+
+	#  Prompt for value
+	lb t0, buffer
+	li t1, 'I'
+	beq t0, t1, do_insert
+
+do_insert:
+	# Prompt for value
+	la a0, value_prompt
+	li a7, SYS_printStr
+	ecall
+
+	# Read value
+	li a7, SYS_readInt
+	ecall
+	mv s0, a0	# Save value
+
+	# Discard remaining characters
+	la a0, buffer
+	li a1, 10
+	li a7, SYS_readStr
+	ecall
+
+	# Call insert
+	# Parameters:
+	# a0 = integer value to insert
+	# a1 = address of word containing root address
+	# a2 = address of word containing free list head address
+	# Returns:
+	# a0 = 0 if successful, 1 if unsuccessful (free list empty)
+	mv a0, s0
+	la a1, root_ptr
+	la a2, free_ptr
+	jal ra, insert
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
