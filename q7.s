@@ -115,19 +115,51 @@ insert:
 
 
 insert_tree_not_empty:
-	# Not implemented yet
-	li a0, 0
+	# Call recursive insert
+	mv a0, s0				# a0 = integer value to insert
+	lw a1, 0(s1)				# a1 = address of word containing root address
+	jal ra, insert_recursive
 	j insert_exit
+
 
 insert_fail:
 	# Return failure
 	li a0, 1
+
 
 insert_exit:
 	# Restore return address
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	ret
+
+
+# Recursive helper function for insert
+insert_recursive:
+	# Save registers
+	addi sp, sp, -16			# Make room on the stack for 4 registers
+	sw ra, 0(sp)				# Save return address
+	sw a0, 4(sp)				# Save register s0
+	sw a1, 8(sp)				# ...
+	sw a2, 12(sp)
+
+	# Save parameters
+	mv s0, a0				# a0 = integer value to insert
+	mv s1, a1				# a1 = address of word containing root address
+
+	# Placeholder - just return success for now
+	li a0, 0
+
+	# Restore registers
+	lw ra, 0(sp)
+	lw a0, 4(sp)
+	lw a1, 8(sp)
+	lw a2, 12(sp)
+	addi sp, sp, 16
+	ret
+
+
+
 
 
 # Delete procedure
@@ -187,38 +219,38 @@ main_loop:
 
 
 do_insert:
+	# Prompt for value
+	la a0, value_prompt
+	li a7, SYS_printStr
+	ecall
+
+	# Read value
+	li a7, SYS_readInt
+	ecall
+	mv s0, a0	# Save value
+
+	# Discard remaining characters
+	la a0, buffer
+	li a1, 10
+	li a7, SYS_readStr
+	ecall
+
+	# Call insert
+	mv a0, s0			# a0 = integer value to insert
+	la a1, root_ptr			# a1 = address of word containing root address
+	la a2, free_ptr			# a2 = address of word containing free list head address
+	jal ra, insert
+
+	# Check result
+	bnez a0, insert_failed
 	j main_loop
-	## Prompt for value
-	#la a0, value_prompt
-	#li a7, SYS_printStr
-	#ecall
 
-	## Read value
-	#li a7, SYS_readInt
-	#ecall
-	#mv s0, a0	# Save value
 
-	## Discard remaining characters
-	#la a0, buffer
-	#li a1, 10
-	#li a7, SYS_readStr
-	#ecall
-
-	# Call insert
-	# Parameters:
-	# a0 = integer value to insert
-	# a1 = address of word containing root address
-	# a2 = address of word containing free list head address
-	# Returns:
-	# a0 = 0 if successful, 1 if unsuccessful (free list empty)
-	#mv a0, s0
-	#la a1, root_ptr
-	#la a2, free_ptr
-	#jal ra, insert
-
-	# Call insert
-	#mv a0, s0
-	#la a1, root,_ptr
+insert_failed:
+	la a0, insert_failed_message
+	li a7, SYS_printStr
+	ecall
+	j main_loop
 
 
 do_delete:
