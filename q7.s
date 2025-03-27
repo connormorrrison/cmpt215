@@ -147,40 +147,41 @@ insert_recursive:
 	mv s0, a0				# a0 = integer value to insert
 	mv s1, a1				# a1 = address of word containing root address
 
-	# Placeholder - just return success for now
-	li a0, 0
+	# Load current node's value
+	lw s3, 0(s1)
 
+
+	beq s0, s3, insert_recursive_duplicate	# If value == node value, skip duplicate insertion
+	bgt s0, s3, insert_recursive_left	# # Value > node value, go left
+	
+	# Value < node value, go right
+	li a0, 0
+	j insert_recursive_exit
+
+
+insert_recurive_left:
+	# Placeholder for going left
+	li a0, 0
+	j insert_recursive_exit
+
+
+insert_recursive_duplicate:
+	# Duplicate value, do not insert
+	li a0, 1
+
+insert_recursive_exit:
 	# Restore registers
 	lw ra, 0(sp)
-	lw a0, 4(sp)
-	lw a1, 8(sp)
-	lw a2, 12(sp)
-	addi sp, sp, 16
+	lw s0, 4(sp)
+	lw s1, 8(sp)
+	lw s2, 12(sp)
+	lw s3, 16(sp)
+	addi sp, sp, 20
 	ret
 
 
 
 
-
-# Delete procedure
-# Parameters:
-# a0 = integer value to delete
-# a1 = address of word containing root address
-# a3 = address of word containing free list head address
-# Returns:
-# none
-delete:
-	# TODO
-
-
-# sumupto procedure
-# Parameters
-# a0 = integer threshold
-# a1 = address of root node
-# Returns:
-# a0: sum of integers less than node
-sumupto:
-	# TODO
 
 
 # Main program
