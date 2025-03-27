@@ -84,7 +84,50 @@ free:		lw t0, 0(a0)
 # Returns:
 # a0 = 0 if successful, 1 if unsuccessful (free list empty)
 insert:
+	# Add basic insert functionality
 	
+	# Save return address
+	addi sp, sp, -4
+	sw ra, 0(sp)
+
+	# Check if the tree is empty
+	lw t0, 0(a1)				# a1 = address of word containing root address
+	bnez t0, insert_tree_not_empty
+
+	# Otherwise, tree is empty, allocate new node
+	mv a0, a2				# a2 = address of word containing free list head address
+	jal ra, alloc
+
+	# Check if allocation successful
+	beqz a0, insert_fail
+
+	# Initialize new node
+	sw s0, 0(a0)				# Store value
+	sw zero, 4(a0)				# Left child = NULL
+	sw zero, 8(a0)				# Right child = NULL
+
+	# Update root
+	sw a0, 0(s1)
+
+	# Return success
+	li a0, 0
+	j insert_exit
+
+
+insert_tree_not_empty:
+	# Not implemented yet
+	li a0, 0
+	j insert_exit
+
+insert_fail:
+	# Return failure
+	li a0, 1
+
+insert_exit:
+	# Restore return address
+	lw ra, 0(sp)
+	addi sp, sp, 4
+	ret
 
 
 # Delete procedure
