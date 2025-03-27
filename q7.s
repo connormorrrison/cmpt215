@@ -84,7 +84,7 @@ free:		lw t0, 0(a0)
 # Returns:
 # a0 = 0 if successful, 1 if unsuccessful (free list empty)
 insert:
-	# TODO
+	
 
 
 # Delete procedure
@@ -111,15 +111,15 @@ sumupto:
 # Main program
 _start:
 	# Initialize tree and free list
-	la a0, nodes	# Address of node memory
-	li a1, 15	# 15 nodes
-	jal ra init	# Initialize free list
+	la a0, nodes			# Address of node memory
+	li a1, 15			# 15 nodes
+	jal ra init			# Initialize free list
 
 	# Store free list head
 	la t0, free_ptr
 	sw a0, 0(t0)
-	
-	# Main loop
+
+
 main_loop:
 	# Prompt for operation
 	la a0, operation_prompt
@@ -128,7 +128,7 @@ main_loop:
 
 	# Read operation
 	la a0, buffer
-	li a1, 10	# Buffer size
+	li a1, 10			# Buffer size
 	li a7, SYS_readStr
 	ecall
 
@@ -136,23 +136,30 @@ main_loop:
 	lb t0, buffer
 	li t1, 'I'
 	beq t0, t1, do_insert
+	li t1, 'D'
+	beq t0, t1, do_delete
+	li t1, 'S'
+	beq t0, t1, do_sumupto
+	j exit
+
 
 do_insert:
-	# Prompt for value
-	la a0, value_prompt
-	li a7, SYS_printStr
-	ecall
+	j main_loop
+	## Prompt for value
+	#la a0, value_prompt
+	#li a7, SYS_printStr
+	#ecall
 
-	# Read value
-	li a7, SYS_readInt
-	ecall
-	mv s0, a0	# Save value
+	## Read value
+	#li a7, SYS_readInt
+	#ecall
+	#mv s0, a0	# Save value
 
-	# Discard remaining characters
-	la a0, buffer
-	li a1, 10
-	li a7, SYS_readStr
-	ecall
+	## Discard remaining characters
+	#la a0, buffer
+	#li a1, 10
+	#li a7, SYS_readStr
+	#ecall
 
 	# Call insert
 	# Parameters:
@@ -161,18 +168,28 @@ do_insert:
 	# a2 = address of word containing free list head address
 	# Returns:
 	# a0 = 0 if successful, 1 if unsuccessful (free list empty)
-	mv a0, s0
-	la a1, root_ptr
-	la a2, free_ptr
-	jal ra, insert
+	#mv a0, s0
+	#la a1, root_ptr
+	#la a2, free_ptr
+	#jal ra, insert
+
+	# Call insert
+	#mv a0, s0
+	#la a1, root,_ptr
 
 
+do_delete:
+	j main_loop
 
 
+do_sumupto:
+	j main_loop
 
 
-
-
+exit:
+	li a7, SYS_exit
+	li a0, 0
+	ecall
 
 
 
