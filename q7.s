@@ -8,13 +8,13 @@
 
 # Data section
 	.section .data
-root_ptr:	.word 0
-free_ptr:	.word 0
-buffer:		.space 20	# Buffer for reading input
+root_ptr:	.word 0			# Address of root node
+free_ptr:	.word 0			# Address of free list head
+buffer:		.space 20		# Buffer for reading input
 
 
 # Node memory
-nodes:		.space 180	# Space for 15 nodes (15 nodes x 3 words/node x 4 bytes/word = 180 bytes)
+nodes:		.space 180		# Space for 15 nodes (15 nodes x 3 words/node x 4 bytes/word = 180 bytes)
 
 
 # Read-only data section
@@ -31,7 +31,7 @@ newline:               .asciz "\n"
 	.globl _start
 
 
-################# DO NOT EDIT ####################
+#################### INIT, ALLOC, AND FREE PROCEDURE ####################
 		# procedure init initializes the free list
         	# procedure arguments as follows:
         	#   a0 - address of block of memory to be used for free list
@@ -72,10 +72,9 @@ free:		lw t0, 0(a0)
 		sw zero, 4(a1)
 	  	sw t0, 8(a1)
 	  	jalr zero, 0(ra)
-################################################
 
 
-
+#################### INSERT PROCEDURE ####################
 # Insert procedure
 # Parameters:
 # a0 = integer value to insert
@@ -95,16 +94,16 @@ insert:
 	# Save parameters
 	mv s0, a0				# Value to insert
 	mv s1, a1				# Address of word containing the root
-	mv s2, s2				# Address of word containing free list head
+	mv s2, a2				# Address of word containing free list head
 
 
 	# Check if the tree is empty
-	lw t0, 0(s1)				# Address of word containing root address
+	lw t0, 0(s1)				# Address of word containing the root
 	bnez t0, insert_not_empty
 
 
 	# Otherwise, tree is empty, allocate new node
-	mv a0, a2				# a2 = address of word containing free list head address
+	mv a0, a2				# a2 = address of word containing free list head
 	jal ra, alloc
 
 
@@ -112,7 +111,7 @@ insert:
 	beqz a0, insert_fail
 
 
-	# Initialize new node
+	# Initialize a new node
 	sw s0, 0(a0)				# Store value
 	sw zero, 4(a0)				# Left child = NULL
 	sw zero, 8(a0)				# Right child = NULL
@@ -136,6 +135,9 @@ insert_not_empty:
 	jal ra, insert_recursive
 
 
+	# Check result from recursive call
+	j insert_exit
+
 insert_fail:
 	# Return failure
 	li a0, 1
@@ -152,10 +154,13 @@ insert_exit:
 
 
 # Recursive helper function for insert
+# Parameters:
 # a0 = integer value to insert
 # a1 = address of current node
 # a3 = address of word containing root address
 # a4 = address of word containing free list head address
+# Returns:
+# a0 = 0 if successful, 1 if unsuccessful (free list empty)
 insert_recursive:
 	# Save registers
 	addi sp, sp, -24			# Make room on the stack for 4 registers
@@ -192,7 +197,10 @@ insert_recursive:
 
 
 	# Otherwise, right child exists, recurse (placeholder)
-	li a0, 0
+	mv a0, s0				# Value to insert
+	mv a1, t0				# Right child address
+	mv a3, s2				# Free list head address
+	jal ra, insert_recursive
 	j insert_recursive_exit
 
 
@@ -205,29 +213,35 @@ insert_recursive_right_empty:
 	# Check if the allocation was successful
 	beqz a0, insert_recursive_fail
 
+	
+	# Initialized new node
+	sw s0, 0(a0)				# Store value
+	sw zero, 4(a0)				# Left child = NULL
+	sw zero, 8(a0)				# Right child = NULL
+	
+	
+	# Link new node as right child
+	sw a0, 8(s1)
+
+	
+	# Return success
+	li a0, 0
+	j insert_recursive_exit
+
 
 insert_recurive_left:
 	# Check left child
-	lw t0, 4(s1)				# s1 = Current node address
+	lw t0, 4(s1)				# Load left child
 	beqz t0, insert_recursive_left_empty	# If left child is NULL
 
 
-	# Left child exists, recurse (TODO)
-	mv a1, s0				# Value to insert
-	mv a2, t0				# Left child
+	# Left child exists, recurse
+	mv a0, s0				# Value to insert
+	mv a1, t0				# Left child address
 	mv a3, s2				# Root pointer address
 	mv a4, s3				# Free list head address
 	jal ra, insert_recursive
 	j insert_recursive_exit
-
-
-	# Right child exists, recurse
-	mv a1, s0                               # Value to insert
-        mv a2, t0                               # Left child
-        mv a3, s2                               # Root pointer address
-        mv a4, s3                               # Free list head address
-        jal ra, insert_recursive
-        j insert_recursive_exit
 
 
 insert_recursive_left_empty:
@@ -245,8 +259,9 @@ insert_recursive_left_empty:
 	sw zero, 4(a0)				# Left child = NULL
 	sw zero, 8(a0)				# Right child = NULL
 
-
-	sw a0, 4(s1)				# Link new node as left child
+	
+	# Link new node as left child
+	sw a0, 4(s1)
 
 
 	# Return success
@@ -256,12 +271,13 @@ insert_recursive_left_empty:
 
 insert_recursive_duplicate:
 	# Duplicate value, do not insert
-	li a0, 1
+	li a0, 0
+	j insert_recursive_exit
 
 
 insert_recursive_fail:
 	# Return fail
-	li a0, 1 
+	li a0, 1
 
 
 insert_recursive_exit:
@@ -276,6 +292,7 @@ insert_recursive_exit:
 	ret
 
 
+#################### DELETE PROCEDURE ####################
 # Delete procedure
 # Parameters:
 # a0 = integer value to delete
@@ -387,7 +404,8 @@ delete_recursive_found:
 	jal ra, free
 
 
-	j delete_recursive_exit			# We are done, jump to exit	
+	j delete_recursive_exit			# We are done, jump to exit
+	
 
 delete_recursive_exit:
 	# Restore registers
@@ -400,6 +418,8 @@ delete_recursive_exit:
 	addi sp, sp, 24
 	ret
 	
+
+
 
 
 # Main program
