@@ -315,6 +315,41 @@ delete_exit:
 	ret
 
 
+# Recursive deletion
+delete_recursive:
+	# Save registers
+	addi sp, sp, -24
+	sw ra, 0(sp)
+	sw s0, 4(sp)
+	sw s1, 8(sp)
+	sw s2, 12(sp)
+	sw s3, 16(sp)
+	sw s4, 20(sp)
+
+
+	# Save parameters
+	mv s0, a0			# Value to delete
+	mv s1, a1			# Address of word containing current node's address
+	mv s2, a2			# Address of word containing free list head
+
+
+delete_recursive_found:
+	# Placeholder
+
+
+delete_recursive_exit:
+	# Restore registers
+	lw ra, 0(sp)
+	lw s0, 4(sp)
+	lw s1, 8(sp)
+	lw s2, 12(sp)
+	lw s3, 16(sp)
+	lw s4, 20(sp)
+	addi sp, sp, 24
+	ret
+	
+
+
 # Main program
 _start:
 	# Initialize tree and free list
