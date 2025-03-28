@@ -183,9 +183,33 @@ insert_recursive_right_empty:
 
 
 insert_recurive_left:
-	# Placeholder for going left
+	# Check left child
+	lw t0, 4(s1)				# s1 = Current node address
+	beqz t0, insert_recurive_fail		# Fail
+
+	# Left child exists, recurse (TODO)
 	li a0, 0
 	j insert_recursive_exit
+
+
+insert_recursive_left_empty:
+	# Left child is NULL, create new node
+	mv a0, s3				# Free list head pointer
+	jal ra, alloc
+
+	# Check if node allocation successful
+	beqz a0, insert_recrusive_fail
+
+	# If successful, initialize new node
+	sw s0, 0(a0)				# Store node value
+	sw zero, 4(a0)				# Left child = NULL
+	sw zero, 8(a0)				# Right child = NULL
+
+	sw a0, 4(s1)				# Link new node as left child
+
+	# Return success
+	li a0, 0
+	insert_recursive_exit
 
 
 insert_recursive_duplicate:
