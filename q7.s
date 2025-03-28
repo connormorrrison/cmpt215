@@ -319,14 +319,12 @@ delete:
 	lw t0, 0(s1)
 	beqz t0, delete_exit
 
-	# Tree is not empty - placeholder for recursive delete
+
 	# Call recursive delete helper
 	mv a0, s0			# Value to delete
 	mv a1, s1			# Address of word containing root
 	mv a2, s2			# Free list head address
 	jal ra, delete_recursive
-
-	j delete_exit
 
 
 delete_exit:
@@ -339,22 +337,23 @@ delete_exit:
 	ret
 
 
-# Recursive deletion
+# Recursive helper function for delete
 delete_recursive:
 	# Save registers
-	addi sp, sp, -24
+	addi sp, sp, -28
 	sw ra, 0(sp)
 	sw s0, 4(sp)
 	sw s1, 8(sp)
 	sw s2, 12(sp)
 	sw s3, 16(sp)
 	sw s4, 20(sp)
+	sw s5, 24(sp)
 
 
 	# Save parameters
-	mv s0, a0			# Value to delete
-	mv s1, a1			# Address of word containing current node's address
-	mv s2, a2			# Address of word containing free list head
+	mv s0, a0				# Value to delete
+	mv s1, a1				# Address of word containing current node's address
+	mv s2, a2				# Address of word containing free list head
 
 
 	# Load current node address
@@ -373,10 +372,19 @@ delete_recursive:
 	beq s0, s4, delete_recursive_found	# Found the node to delete
 	
 	
+	# Value > node value, go left
 	bgt s0, s4, delete_recursive_left
+
 
 	# Value < node value, go right
 	addi a1, s3, 8				# Address of right child pointer
+	jal ra, delete_recursive
+	j delete_recursive_exit
+
+
+delete_recursive_left:
+	# Go to left child
+	addi a1, s3, 4
 	jal ra, delete_recursive
 	j delete_recursive_exit
 
@@ -387,25 +395,39 @@ delete_recursive_found:
 
 	# Check if node has no children 
 	lw t0, 4(s3)				# Left child
+	bnez t0, delete_recursive_has_children	# Branch if left child exists
 	lw t1, 8(s3)				# Right child
-	
-
-	bnez t0, delete_recursive_has_children	# If left child exists, branch
-	bnez t1, delete recursive_has_children	# If right child exists, branch
+	bnez t1, delete_recursive_has_children	# Branch if right child exists
 
 
 	# Otherwise, the node has no children, and we delete
 	sw zero, 0(s1)
 
 
-	# We need to free the node
-	mv a0, s2
-	mv a1, s3
+	# Free the node
+	mv a0, s2				# Free list head address
+	mv a1, s3				# Node to free
 	jal ra, free
 
 
-	j delete_recursive_exit			# We are done, jump to exit
+	# Done, jump to exit
+	j delete_recursive_exit
 	
+
+delete_recursive_has_children:
+	# Check if node has only one child
+	lw t0, 4(s3)				# Left child
+	beqz t0, delete_recursive_right_only
+
+	lw t0, 8(s3)				# Right child
+	beqz t0, delete_recursive_left_only
+
+	
+	# Node has two children
+	# Find successor (rightmost node in left subtree)
+	lw s5, 4(s3)				# Start with left child
+	addi t0, s3, 4				
+
 
 delete_recursive_exit:
 	# Restore registers
@@ -418,9 +440,6 @@ delete_recursive_exit:
 	addi sp, sp, 24
 	ret
 	
-
-
-
 
 # Main program
 _start:
