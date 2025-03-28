@@ -84,42 +84,56 @@ free:		lw t0, 0(a0)
 # Returns:
 # a0 = 0 if successful, 1 if unsuccessful (free list empty)
 insert:
-	# Add basic insert functionality
-	
-	# Save return address
-	addi sp, sp, -4
+	# Save registers
+	addi sp, sp, -16
 	sw ra, 0(sp)
+	sw s0, 4(sp)
+	sw s1, 8(sp)
+	sw s2, 12(sp)
+
+
+	# Save parameters
+	mv s0, a0				# Value to insert
+	mv s1, a1				# Address of word containing the root
+	mv s2, s2				# Address of word containing free list head
+
 
 	# Check if the tree is empty
-	lw t0, 0(a1)				# a1 = address of word containing root address
-	bnez t0, insert_tree_not_empty
+	lw t0, 0(s1)				# Address of word containing root address
+	bnez t0, insert_not_empty
+
 
 	# Otherwise, tree is empty, allocate new node
 	mv a0, a2				# a2 = address of word containing free list head address
 	jal ra, alloc
 
+
 	# Check if allocation successful
 	beqz a0, insert_fail
+
 
 	# Initialize new node
 	sw s0, 0(a0)				# Store value
 	sw zero, 4(a0)				# Left child = NULL
 	sw zero, 8(a0)				# Right child = NULL
 
+
 	# Update root
 	sw a0, 0(s1)
+
 
 	# Return success
 	li a0, 0
 	j insert_exit
 
 
-insert_tree_not_empty:
-	# Call recursive insert
-	mv a0, s0				# a0 = integer value to insert
-	lw a1, 0(s1)				# a1 = address of word containing root address
+insert_not_empty:
+	# Tree is not empty, call recursive insert helper
+	mv a0, s0				# Value to insert
+	lw a1, 0(s1)				# Root address
+	mv a3, s1				# Root pointer address
+	mv a4, s2				# Free list head address
 	jal ra, insert_recursive
-	j insert_exit
 
 
 insert_fail:
@@ -128,9 +142,12 @@ insert_fail:
 
 
 insert_exit:
-	# Restore return address
+	# Restore registers
 	lw ra, 0(sp)
-	addi sp, sp, 4
+	lw s0, 4(sp)
+	lw s1, 8(sp)
+	lw s2, 12(sp)
+	addi sp, sp, 16
 	ret
 
 
@@ -149,24 +166,30 @@ insert_recursive:
 	sw s3, 16(sp)
 	sw s4, 20(sp)
 
+
 	# Save parameters
 	mv s0, a0				# Value to insert
 	mv s1, a1				# Current node address
 	mv s2, a3				# Root pointer address
 	mv s3, a4				# Free list head address
 
+
 	# Load current node's value
 	lw s4, 0(s1)
+
 	
 	# If value == node value, skip duplicate insertion
 	beq s0, s4, insert_recursive_duplicate
+
 	
 	# Value > node value, go left
 	bgt s0, s4, insert_recursive_left
+
 	
 	# Value < node value, go right
 	lw t0, 8(s1)				# Load right child
 	beqz t0, insert_recursive_right_empty	# If right child is NULL
+
 
 	# Otherwise, right child exists, recurse (placeholder)
 	li a0, 0
@@ -178,6 +201,7 @@ insert_recursive_right_empty:
 	mv a0, s3				# Free list head address
 	jal ra, alloc
 
+
 	# Check if the allocation was successful
 	beqz a0, insert_recursive_fail
 
@@ -187,6 +211,7 @@ insert_recurive_left:
 	lw t0, 4(s1)				# s1 = Current node address
 	beqz t0, insert_recursive_left_empty	# If left child is NULL
 
+
 	# Left child exists, recurse (TODO)
 	mv a1, s0				# Value to insert
 	mv a2, t0				# Left child
@@ -194,6 +219,7 @@ insert_recurive_left:
 	mv a4, s3				# Free list head address
 	jal ra, insert_recursive
 	j insert_recursive_exit
+
 
 	# Right child exists, recurse
 	mv a1, s0                               # Value to insert
@@ -209,15 +235,19 @@ insert_recursive_left_empty:
 	mv a0, s3				# Free list head pointer
 	jal ra, alloc
 
+
 	# Check if node allocation successful
 	beqz a0, insert_recrusive_fail
+
 
 	# If successful, initialize new node
 	sw s0, 0(a0)				# Store node value
 	sw zero, 4(a0)				# Left child = NULL
 	sw zero, 8(a0)				# Right child = NULL
 
+
 	sw a0, 4(s1)				# Link new node as left child
+
 
 	# Return success
 	li a0, 0
@@ -257,6 +287,7 @@ _start:
 	li a1, 15			# 15 nodes
 	jal ra init			# Initialize free list
 
+
 	# Store free list head
 	la t0, free_ptr
 	sw a0, 0(t0)
@@ -268,11 +299,13 @@ main_loop:
 	li a7, SYS_printStr
 	ecall
 
+
 	# Read operation
 	la a0, buffer
 	li a1, 10			# Buffer size
 	li a7, SYS_readStr
 	ecall
+
 
 	#  Prompt for value
 	lb t0, buffer
@@ -291,10 +324,12 @@ do_insert:
 	li a7, SYS_printStr
 	ecall
 
+
 	# Read value
 	li a7, SYS_readInt
 	ecall
 	mv s0, a0	# Save value
+
 
 	# Discard remaining characters
 	la a0, buffer
@@ -302,11 +337,13 @@ do_insert:
 	li a7, SYS_readStr
 	ecall
 
+
 	# Call insert
 	mv a0, s0			# a0 = integer value to insert
 	la a1, root_ptr			# a1 = address of word containing root address
 	la a2, free_ptr			# a2 = address of word containing free list head address
 	jal ra, insert
+
 
 	# Check result
 	bnez a0, insert_failed
