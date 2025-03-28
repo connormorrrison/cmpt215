@@ -303,6 +303,13 @@ delete:
 	beqz t0, delete_exit
 
 	# Tree is not empty - placeholder for recursive delete
+	# Call recursive delete helper
+	mv a0, s0			# Value to delete
+	mv a1, s1			# Address of word containing root
+	mv a2, s2			# Free list head address
+	jal ra, delete_recursive
+
+	j delete_exit
 
 
 delete_exit:
@@ -333,8 +340,32 @@ delete_recursive:
 	mv s2, a2			# Address of word containing free list head
 
 
+	# Load current node address
+	lw s3, 0(s1)
+	
+
+	# Check if current node is NULL
+	beqz s3, delete_recursive_exit
+	
+
+	# Load current node's value
+	lw s4, 0(s3)
+
+
+	# Compare value with current node's value
+	beq s0, s4, delete_recursive_found	# Found the node to delete
+	
+	
+	bgt s0, s4, delete_recursive_left
+
+	# Value < node value, go right
+	addi a1, s3, 8				# Address of right child pointer
+	jal ra, delete_recursive
+	j delete_recursive_exit
+
+
 delete_recursive_found:
-	# Placeholder
+	# 
 
 
 delete_recursive_exit:
