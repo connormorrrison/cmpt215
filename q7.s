@@ -276,8 +276,43 @@ insert_recursive_exit:
 	ret
 
 
+# Delete procedure
+# Parameters:
+# a0 = integer value to delete
+# a1 = address of word containing root address
+# a3 = address of word containing free list head address
+# Returns:
+# none
+delete:
+	# Save registers
+	addi sp, sp, -16
+	sw ra, 0(sp)
+	sw s0, 4(sp)
+	sw s1, 8(sp)
+	sw s2, 12(sp)
 
 
+	# Save parameters
+	mv s0, a0			# Value to delete
+	mv s1, a1			# Address of word containing root
+	mv s2, a2			# Address of word containing free list head
+
+
+	# Check if tree is empty
+	lw t0, 0(s1)
+	beqz t0, delete_exit
+
+	# Tree is not empty - placeholder for recursive delete
+
+
+delete_exit:
+	# Restore registers
+	lw ra, 0(sp)
+	lw s0, 4(sp)
+	lw s1, 8(sp)
+	lw s2, 12(sp)
+	addi sp, sp, 16
+	ret
 
 
 # Main program
@@ -358,6 +393,32 @@ insert_failed:
 
 
 do_delete:
+	# Prompt for value
+	la a0, value_prompt
+	li a7, SYS_printStr
+	ecall
+
+	
+	# Read value
+	li a7, SYS_readInt
+	ecall
+	mv s0, a0			# Save value
+
+
+	# Discard remaining characters
+	la a0, buffer
+	li a1, 10
+	li a7, SYS_readStr
+	ecall
+
+	
+	# Call delete
+	mv a0, s0			# Value to delete
+	la a1, root_ptr			# Address of word containing root
+	la a2, free_ptr			# Address of word containing free list head
+	jal ra, delete
+
+	
 	j main_loop
 
 
