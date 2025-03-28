@@ -135,28 +135,51 @@ insert_exit:
 
 
 # Recursive helper function for insert
+# a0 = integer value to insert
+# a1 = address of current node
+# a3 = address of word containing root address
+# a4 = address of word containing free list head address
 insert_recursive:
 	# Save registers
-	addi sp, sp, -16			# Make room on the stack for 4 registers
+	addi sp, sp, -24			# Make room on the stack for 4 registers
 	sw ra, 0(sp)				# Save return address
-	sw a0, 4(sp)				# Save register s0
-	sw a1, 8(sp)				# ...
-	sw a2, 12(sp)
+	sw s0, 4(sp)				# Save register s0
+	sw s1, 8(sp)				# ...
+	sw s2, 12(sp)
+	sw s3, 16(sp)
+	sw s4, 20(sp)
 
 	# Save parameters
-	mv s0, a0				# a0 = integer value to insert
-	mv s1, a1				# a1 = address of word containing root address
+	mv s0, a0				# Value to insert
+	mv s1, a1				# Current node address
+	mv s2, a3				# Root pointer address
+	mv s3, a4				# Free list head address
 
 	# Load current node's value
-	lw s3, 0(s1)
-
-
-	beq s0, s3, insert_recursive_duplicate	# If value == node value, skip duplicate insertion
-	bgt s0, s3, insert_recursive_left	# # Value > node value, go left
+	lw s4, 0(s1)
+	
+	# If value == node value, skip duplicate insertion
+	beq s0, s4, insert_recursive_duplicate
+	
+	# Value > node value, go left
+	bgt s0, s4, insert_recursive_left
 	
 	# Value < node value, go right
+	lw t0, 8(s1)				# Load right child
+	beqz t0, insert_recursive_right_empty	# If right child is NULL
+
+	# Otherwise, right child exists, recurse (placeholder)
 	li a0, 0
 	j insert_recursive_exit
+
+
+insert_recursive_right_empty:
+	# Right child is NULL, create new node
+	mv a0, s3				# Free list head address
+	jal ra, alloc
+
+	# Check if the allocation was successful
+	beqz a0, insert_recursive_fail
 
 
 insert_recurive_left:
@@ -169,6 +192,12 @@ insert_recursive_duplicate:
 	# Duplicate value, do not insert
 	li a0, 1
 
+
+insert_recursive_fail:
+	# Return fail
+	li a0, 1 
+
+
 insert_recursive_exit:
 	# Restore registers
 	lw ra, 0(sp)
@@ -176,7 +205,8 @@ insert_recursive_exit:
 	lw s1, 8(sp)
 	lw s2, 12(sp)
 	lw s3, 16(sp)
-	addi sp, sp, 20
+	lw s4, 20(sp)
+	addi sp, sp, 24
 	ret
 
 
