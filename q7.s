@@ -365,8 +365,29 @@ delete_recursive:
 
 
 delete_recursive_found:
-	# 
+	# Found the node to delete
 
+
+	# Check if node has no children 
+	lw t0, 4(s3)				# Left child
+	lw t1, 8(s3)				# Right child
+	
+
+	bnez t0, delete_recursive_has_children	# If left child exists, branch
+	bnez t1, delete recursive_has_children	# If right child exists, branch
+
+
+	# Otherwise, the node has no children, and we delete
+	sw zero, 0(s1)
+
+
+	# We need to free the node
+	mv a0, s2
+	mv a1, s3
+	jal ra, free
+
+
+	j delete_recursive_exit			# We are done, jump to exit	
 
 delete_recursive_exit:
 	# Restore registers
