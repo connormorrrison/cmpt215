@@ -185,11 +185,23 @@ insert_recursive_right_empty:
 insert_recurive_left:
 	# Check left child
 	lw t0, 4(s1)				# s1 = Current node address
-	beqz t0, insert_recurive_fail		# Fail
+	beqz t0, insert_recursive_left_empty	# If left child is NULL
 
 	# Left child exists, recurse (TODO)
-	li a0, 0
+	mv a1, s0				# Value to insert
+	mv a2, t0				# Left child
+	mv a3, s2				# Root pointer address
+	mv a4, s3				# Free list head address
+	jal ra, insert_recursive
 	j insert_recursive_exit
+
+	# Right child exists, recurse
+	mv a1, s0                               # Value to insert
+        mv a2, t0                               # Left child
+        mv a3, s2                               # Root pointer address
+        mv a4, s3                               # Free list head address
+        jal ra, insert_recursive
+        j insert_recursive_exit
 
 
 insert_recursive_left_empty:
