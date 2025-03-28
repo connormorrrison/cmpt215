@@ -1,0 +1,146 @@
+Question 1:
+a) Block size of one word (4 bytes)
+Block number = floor(552 / 4) = floor(138) = 138
+Block number = floor(1624 / 4) = floor(406) = 406
+
+Answer:
+Therefore, with a block size of one word (4 bytes), address 552 belongs to block 138 and address 1624 belongs to block 406.
+
+
+b) Block size of eight words (32 bytes)
+Block number = floor(552 / 32) = floor(17.25) = 17
+Block number = floor(1624 / 32) = floor(50.75) = 50
+
+Answer:
+Therefore, with a block size of eight words (32 bytes), address 552 belongs to block 17 and address 1624 belongs to block 50.
+
+
+
+
+Question 2:
+a) Direct-mapped cache with total capacity of 4 eight-word blocks
+For address 552 (block 17):
+Position = Block number % Number of cache blocks = 17 % 4 = 1
+
+For address 1624 (block 50):
+Position = Block number % Number of cache blocks = 50 % 4 = 2
+
+Answer:
+Therefore, block 17 (address 552) goes to position 1 and block 50 (address 1624) goes to position 2.
+
+
+b) 2-way set-associative cache with total capacity of 4 eight-word blocks
+Number of sets = Total blocks / Ways = 4 / 2 = 2 sets
+For address 552 (block 17):
+Set number = Block number % Number of sets = 17 % 2 = 1
+
+For address 1624 (block 50):
+Set number = Block number % Number of sets = 50 % 2 = 0
+
+Answer:
+Therefore, block 17 (address 552) goes to set 1 and block 50 (address 1624) goes to set 0.
+
+
+
+
+Question 3:
+[answer]
+a) Direct-mapped cache with total capacity of 4 eight-word blocks
+For address 552 (block 17):
+Tag = Block number / Number of cache blocks = 17 / 4 = 4
+
+For address 1624 (block 50):
+Tag = Block number / Number of cache blocks = 50 / 4 = 12
+
+Answer:
+Therefore, the tag value for block 17 (address 552) is 4 and the tag value for block 50 (address 1624) is 12.
+
+
+b) 2-way set-associative cache with total capacity of 4 eight-word blocks
+For address 552 (block 17):
+Tag = Block number / Number of sets = 17 / 2 = 8
+
+For address 1624 (block 50):
+Tag = Block number / Number of sets = 50 / 2 = 25
+
+Answer:
+Therefore, the tag value for block 17 (address 552) is 8 and the tag value for block 50 (address 1624) is 25.
+
+
+
+
+Question 4:
+1. Identify which block each address belongs to:
+- Address 552: Block 17 (from before)
+- Address 1624: Block 50 (from before)
+- Address 1604: Block floor(1604/32) = 50
+- Address 968: Block floor(968/32) = 30
+- Address 1932: Block floor(1932/32) = 60
+- Address 1624 (again): Block 50
+- Address 420: Block floor(420/32) = 13
+- Address 1924: Block floor(1924/32) = 60
+- Address 544: Block floor(544/32) = 17
+- Address 688: Block floor(688/32) = 21
+- Address 552 (again): Block 17
+
+2. Determine cache organization and initial state:
+- For a 2-way set-associative cache with 4 blocks total, we have 2 sets (set 0 and set 1).
+- Set number = Block number % 2
+- Initially after the first two reads (552 and 1624), the cache contains: Set 0: [Block 50], Set 1: [Block 17]
+
+3. Tracing each subsequent access:
+1. Address 1604 (Block 50): HIT in set 0
+2. Address 968 (Block 30): MISS, placed in set 0 (LRU: Block 50, MRU: Block 30)
+3. Address 1932 (Block 60): MISS, replaces Block 50 in set 0 (LRU: Block 30, MRU: Block 60)
+4. Address 1624 (Block 50): MISS, replaces Block 30 in set 0 (LRU: Block 60, MRU: Block 50)
+5. Address 420 (Block 13): MISS, placed in set 1 (LRU: Block 17, MRU: Block 13)
+6. Address 1924 (Block 60): HIT in set 0, becomes MRU (LRU: Block 50, MRU: Block 60)
+7. Address 544 (Block 17): HIT in set 1, becomes MRU (LRU: Block 13, MRU: Block 17)
+8. Address 688 (Block 21): MISS, replaces Block 13 in set 1 (LRU: Block 17, MRU: Block 21)
+9. Address 552 (Block 17): HIT in set 1, becomes MRU (LRU: Block 21, MRU: Block 17)
+
+Answer:
+Therefore, the read operations that result in cache hits are: 1604, 1924, 544, and 552.
+
+
+
+
+Question 5:
+1: Determine which virtual page contains address 20000:
+Virtual page number = Floor(Virtual address / Page size)
+Virtual page number = Floor(20000 / 8192) = Floor(2.441...) = 2
+
+2: Calculate the offset within the page:
+Offset = Virtual address % Page size
+Offset = 20000 % 8192 = 3616
+
+Step 3: Look up the corresponding physical page.
+From the table, virtual page 2 maps to physical page 4.
+
+Step 4: Calculate the physical address.
+Physical address = (Physical page number * Page size) + Offset
+Physical address = (4 * 8192) + 3616
+Physical address = 32768 + 3616
+Physical address = 36384
+
+Answer:
+Therefore, virtual address 20000 corresponds to physical address 36384.
+
+
+
+
+Question 6:
+1. Calculate page size (virtual address = virtual page number + page offset):
+Page offset bits = 46 - 35 = 11 bits
+Page size = 2^11 = 2,048 bytes = 2 KB
+
+2. Calculate total physical memory:
+Number of physical pages = 2^30 = 1,073,741,824
+Maximum physical memory = Number of physical pages * Page size
+Maximum physical memory = 2^30 * 2^11 = 2^41
+
+3. Convert:
+2^41 = 2^31 KB = 2^21 MB = 2^11 GB = 2 TB
+
+Answer:
+Therefore, the maximum amount of physical memory this system could have is 2 TB.
