@@ -419,6 +419,7 @@ delete_recursive_has_children:
 	lw t0, 4(s3)				# Left child
 	beqz t0, delete_recursive_right_only
 
+
 	lw t0, 8(s3)				# Right child
 	beqz t0, delete_recursive_left_only
 
@@ -427,6 +428,37 @@ delete_recursive_has_children:
 	# Find successor (rightmost node in left subtree)
 	lw s5, 4(s3)				# Start with left child
 	addi t0, s3, 4				
+
+
+delete_recursive_find_successor:
+	# Implement later
+
+
+delete_recursive_left_only:
+	# Node has only left child
+	lw t0, 4(s3)				# Left child
+	sw t0, 0(s1)				# Update parent's pointer
+	
+
+	# Free the node
+	mv a0, s2				# Free list head address
+	mv a1, s3				# Node to free
+	jal ra, free
+
+
+	j delete_recursive_exit
+
+
+delete_recursive_right_only:
+	# Node has only right child
+	lw t0, 8(s3)				# Right child
+	sw t0, 0(s1)
+	
+
+	# Free the node
+	mv a0, s2				# Free list head address
+	mv a1, s3				# Node to free
+	jal ra, free
 
 
 delete_recursive_exit:
