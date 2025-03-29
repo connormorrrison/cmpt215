@@ -430,8 +430,39 @@ delete_recursive_has_children:
 	addi t0, s3, 4				
 
 
+# Finds the in-order successor (smallest value in right subtree)
 delete_recursive_find_successor:
-	# Implement later
+	# Check if current node has a right child
+	lw t1, 8(s5)				# s5 points to the current node, add 8 to point to right child
+	# If t1 equals 0, there is no right child
+	# This means we have found the in-order successor (the left node)
+	beqz t1, delete_recursive_found_successor
+	
+
+	# Otherwise, we have found a right child and move on to the right child
+	addi t0, s5, 8				# Calculate address of right child pointer
+	mv s5, t1				# Move to the right child
+	j delete_recursive_find_successor	# This continues the loop until we reach a node with no right child
+
+	
+# When we reach here, it means we have found the in-order successor
+delete_recursive_found_successor:
+	# s5 now contains the successor node
+	
+
+	# Copy successor's value to node being deleted
+	lw t1, 0(s5)				# Load successor value into t1
+	sw t1, 0(s3)				# Store successor value into node being deleted (s3)
+
+
+	# Now delete the successor node
+	mv a0, t1				# Value to delete (successor's value)
+	mv a1, t0				# Address of successor's pointer
+	jal ra, delete_recursive
+	
+
+	# Exit delete
+	j delete_recursive_exit 
 
 
 delete_recursive_left_only:
@@ -469,7 +500,8 @@ delete_recursive_exit:
 	lw s2, 12(sp)
 	lw s3, 16(sp)
 	lw s4, 20(sp)
-	addi sp, sp, 24
+	lw s5, 24(sp)
+	addi sp, sp, 28
 	ret
 	
 
