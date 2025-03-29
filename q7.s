@@ -613,6 +613,51 @@ do_delete:
 
 
 do_sumupto:
+	# Prompt for value
+	la a0, value_prompt
+	li a7, SYS_printStr
+	ecall
+
+
+	# Read value
+	li a7, SYS_readInt
+	ecall
+	mv s0, a0			# Save value
+
+
+	# Discard remaining characters
+	la a0, buffer
+	li a1, 10
+	li a7, SYS_readStr
+	ecall
+
+	
+	# Call sumupto
+	mv a0, s0			# Threshold value
+	la t0, root_ptr			# Load address of root_ptr
+	lw a1, 0(t0)
+	jal ra, sumupto
+	mv s1, a0			# Save result
+	
+
+	# Print result message
+	la a0m sum_message
+	li a7, SYS_printStr
+	ecall
+
+	
+	# Print result
+	mv a0, s1
+	li a7, SYS_printInt
+	ecall
+
+	
+	# Print newline
+	la a0, newline
+	li a7, SYS_printStr
+	ecall
+
+
 	j main_loop
 
 
