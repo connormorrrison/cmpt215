@@ -517,10 +517,9 @@ sumupto:
 	beqz a1, sumupto_empty
 
 
-	# Else, the tree is not empty
 	# Save registers
-        addi sp, sp, -20
-        sw ra, 0(sp)
+	addi sp, sp, -20
+	sw ra, 0(sp)
 	sw s0, 4(sp)
 	sw s1, 8(sp)
 	sw s2, 12(sp)
@@ -531,55 +530,43 @@ sumupto:
 	mv s0, a0				# Integer threshold
 	mv s1, a1				# Address of root node
 
-	
+    	
 	# Initialize sum
 	li s2, 0
 
-
+    
 	# Load current node's value
 	lw s3, 0(s1)
 
-	
-	# Check if current node value < threshhold
-	bge s3, s0, sumupto_skip_current
+    
+	# If current node value >= threshold, skip node and left subtree
+	bge s3, s0, sumupto_process_right
 
-	
+    
 	# Add current node value to sum
-	add s2, s2, s3				# Add recursive result to sum
+	add s2, s2, s3
 
+    
+	# Process left subtree
+	lw a1, 4(s1)
+	beqz a1, sumupto_process_right
 
-sumupto_skip_current:
-	# Recursively process right subtree
-	lw a1, 8(s1)				# Load address of right child into a1
-	beqz a1, sumupto_skip_right		# If right child NULL, skip to right subtree
-
-
-	# Otherwise, the right subtree is present and we need to process it
-	# Call recurively on right subtree
+    
+	# Call recursively on left subtree
 	mv a0, s0
 	jal ra, sumupto
 
 
 	# Add result to sum
-	add s2, s2, a0 
+	add s2, s2, a0
 
+    
+sumupto_process_right:
+	# Always process right subtree
+	lw a1, 8(s1)
+	beqz a1, sumupto_done
 
-sumupto_skip_right:
-	# s0 holds threshold value
-	# s1 holds address of root node
-
-	# Recursively process left subtree (larger values)
-	lw a1, 4(s1)				# Load address of left child into a1
-	beqz a1, sumupto_done			# If left child is NULL, we're done
-
-
-	# For left subtree, only process if values are < threshold
-	lw t0, 0(a1)				# Get the value stored in the left child
-	# If the left child is >= the threshold, skip the left subtree
-	bge t0, s0, sumupto_done
-
-
-	# Otherwise, we are below the threshold; call recursively to left subtree
+	# Move threshold value to a0 for recursive call
 	mv a0, s0
 	jal ra, sumupto
 
@@ -587,12 +574,13 @@ sumupto_skip_right:
 	# Add result to sum
 	add s2, s2, a0
 
-	
+    
 sumupto_done:
 	# Set return value
 	mv a0, s2
 
-	# Retore registers
+
+	# Restore registers
 	lw ra, 0(sp)
 	lw s0, 4(sp)
 	lw s1, 8(sp)
@@ -601,9 +589,9 @@ sumupto_done:
 	addi sp, sp, 20
 	ret
 
-
+    
 sumupto_empty:
-	# Empty tree, return 0
+	# Return 0
 	li a0, 0
 	ret
 
