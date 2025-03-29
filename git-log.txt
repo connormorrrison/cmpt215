@@ -1,3 +1,15 @@
+commit f41deee1442e43503ce4394924347542955e7e4c
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Mar 28 22:23:26 2025 -0600
+
+    Update working in written
+
+commit 823a672fe24302899b64db0d2b6b040d09b5e0c6
+Author: Connor Morrison <tvi340@usask.ca>
+Date:   Fri Mar 28 22:10:49 2025 -0600
+
+    Updated git-log.txt
+
 commit 46d427c95a6a4f74211fafc3755095fcb4d46bcd
 Author: Connor Morrison <tvi340@usask.ca>
 Date:   Fri Mar 28 22:07:28 2025 -0600
