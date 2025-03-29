@@ -505,12 +505,84 @@ delete_recursive_exit:
 	ret
 	
 
+#################### SUMUPTO PROCEDURE ####################
+# sumupto procedure
+# Parameters
+# a0 = integer threshold
+# a1 = address of root node
+# Returns:
+# a0 = sum of integers less than node
+sumupto:
+	# Check if tree is empty
+	beqz a1, sumupto_empty
+
+
+	# Else, the tree is not empty
+	# Save registers
+        addi sp, sp, -20
+        sw ra, 0(sp)
+	sw s0, 4(sp)
+	sw s1, 8(sp)
+	sw s2, 12(sp)
+	sw s3, 16(sp)
+
+
+	# Save parameters
+	mv s0, a0				# Integer threshold
+	mv s1, a1				# Address of root node
+
+	
+	# Initialize sum
+	li s2, 0
+
+
+	# Load current node's value
+	lw s3, 0(s1)
+
+	
+	# Check if current node value < threshhold
+	bge s3, s0, sumupto_skip_current
+
+	
+	# Add current node value to sum
+	add s2, s2, s3
+
+
+sumupto_skip_current:
+	# Recursively process right subtree
+	lw a1, 8(s1)				# Load address of right child into a1
+	beqz a1, sumupto_skip_right		# If right child NULL, skip to right subtree
+
+	# Otherwise, the right subtree is present and we need to process it
+	# Call recurively on right subtree
+	mv a0, s0
+	jal ra, sumupto 
+
+	
+sumupto_done:
+	# Retore registers
+	lw ra, 0(sp)
+	lw s0, 4(sp)
+	lw s1, 8(sp)
+	lw s2, 12(sp)
+	lw s3, 16(sp)
+	addi sp, sp, 20
+	ret
+
+
+sumupto_empty:
+	# Empty tree, return 0
+	li a0, 0
+	ret
+
+
+#################### MAIN PROCEDURE ####################
 # Main program
 _start:
 	# Initialize tree and free list
-	la a0, nodes			# Address of node memory
-	li a1, 15			# 15 nodes
-	jal ra init			# Initialize free list
+	la a0, nodes				# Address of node memory
+	li a1, 15				# 15 nodes
+	jal ra init				# Initialize free list
 
 
 	# Store free list head
