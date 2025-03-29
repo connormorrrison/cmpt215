@@ -44,7 +44,6 @@ Therefore, block 17 (address 552) goes to set 1 and block 50 (address 1624) goes
 
 
 Question 3:
-[answer]
 a) Direct-mapped cache with total capacity of 4 eight-word blocks
 For address 552 (block 17):
 Tag = Block number / Number of cache blocks = 17 / 4 = 4
@@ -87,6 +86,7 @@ Question 4:
 - For a 2-way set-associative cache with 4 blocks total, we have 2 sets (set 0 and set 1).
 - Set number = Block number % 2
 - Initially after the first two reads (552 and 1624), the cache contains: Set 0: [Block 50], Set 1: [Block 17]
+- Note: LRU = Least Recently Used; MRU = Most Recently Used
 
 3. Tracing each subsequent access:
 1. Address 1604 (Block 50): HIT in set 0
