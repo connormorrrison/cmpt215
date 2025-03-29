@@ -229,7 +229,7 @@ insert_recursive_right_empty:
 	j insert_recursive_exit
 
 
-insert_recurive_left:
+insert_recursive_left:
 	# Check left child
 	lw t0, 4(s1)				# Load left child
 	beqz t0, insert_recursive_left_empty	# If left child is NULL
@@ -251,7 +251,7 @@ insert_recursive_left_empty:
 
 
 	# Check if node allocation successful
-	beqz a0, insert_recrusive_fail
+	beqz a0, insert_recursive_fail
 
 
 	# If successful, initialize new node
@@ -266,7 +266,7 @@ insert_recursive_left_empty:
 
 	# Return success
 	li a0, 0
-	insert_recursive_exit
+	j insert_recursive_exit
 
 
 insert_recursive_duplicate:
@@ -545,7 +545,7 @@ sumupto:
 
 	
 	# Add current node value to sum
-	add s2, s2, s3
+	add s2, s2, s3				# Add recursive result to sum
 
 
 sumupto_skip_current:
@@ -553,13 +553,45 @@ sumupto_skip_current:
 	lw a1, 8(s1)				# Load address of right child into a1
 	beqz a1, sumupto_skip_right		# If right child NULL, skip to right subtree
 
+
 	# Otherwise, the right subtree is present and we need to process it
 	# Call recurively on right subtree
 	mv a0, s0
-	jal ra, sumupto 
+	jal ra, sumupto
+
+
+	# Add result to sum
+	add s2, s2, a0 
+
+
+sumupto_skip_right:
+	# s0 holds threshold value
+	# s1 holds address of root node
+
+	# Recursively process left subtree (larger values)
+	lw a1, 4(s1)				# Load address of left child into a1
+	beqz a1, sumupto_done			# If left child is NULL, we're done
+
+
+	# For left subtree, only process if values are < threshold
+	lw t0, 0(a1)				# Get the value stored in the left child
+	# If the left child is >= the threshold, skip the left subtree
+	bge t0, s0, sumupto_done
+
+
+	# Otherwise, we are below the threshold; call recursively to left subtree
+	mv a0, s0
+	jal ra, sumupto
+
+	
+	# Add result to sum
+	add s2, s2, a0
 
 	
 sumupto_done:
+	# Set return value
+	mv a0, s2
+
 	# Retore registers
 	lw ra, 0(sp)
 	lw s0, 4(sp)
@@ -582,7 +614,7 @@ _start:
 	# Initialize tree and free list
 	la a0, nodes				# Address of node memory
 	li a1, 15				# 15 nodes
-	jal ra init				# Initialize free list
+	jal ra, init				# Initialize free list
 
 
 	# Store free list head
@@ -713,7 +745,7 @@ do_sumupto:
 	
 
 	# Print result message
-	la a0m sum_message
+	la a0, sum_message
 	li a7, SYS_printStr
 	ecall
 
@@ -737,13 +769,4 @@ exit:
 	li a7, SYS_exit
 	li a0, 0
 	ecall
-
-
-
-
-
-
-
-
-
 
